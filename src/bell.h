@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "futex.h"
 
-#include <threads.h>
+#include "thread.h"
 
 inline void mtdp_set_done(mtdp_futex* ftx)
 {

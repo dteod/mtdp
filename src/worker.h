@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <stdbool.h>
 #include <stdatomic.h>
-#include <threads.h>
+#include "thread.h"
 
 typedef struct {
     thrd_t thread;

@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "impl/errno.h"
 #include "memory.h"
 
-#include <threads.h>
+#include "thread.h"
 
 static inline void mtdp_lock2(mtx_t *restrict m1, mtx_t *restrict m2)
 {

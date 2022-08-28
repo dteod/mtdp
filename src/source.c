@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "bell.h"
 
 #include <stddef.h>
-#include <threads.h>
+#include "thread.h"
 
 #if defined(__GNUC__) || defined(__clang__)
 #   define likely(expr)    (__builtin_expect(!!(expr), 1))

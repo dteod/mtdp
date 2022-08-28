@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "impl/pipe.h"
 #include "memory.h"
 
-#include <threads.h>
+#include "thread.h"
 #include <stdatomic.h>
 
 struct s_mtdp_pipeline {

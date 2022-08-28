@@ -36,16 +36,29 @@ default_setting(MTDP_BUFFER_FIFO_BLOCK_SIZE               16        )
 default_setting(MTDP_PIPELINE_CONSUMER_TIMEOUT_US         100000    )
 
 add_library(mtdp-object OBJECT
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/errno.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/futex.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/futex.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/bell.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/bell.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/sem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sem.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/thread.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/thread.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/worker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/worker.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/errno.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/errno.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/buffer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/buffer.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/pipe.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pipe.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/source.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/source.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/stage.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/stage.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/sink.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sink.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/pipeline.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pipeline.c
 )
 target_sources(mtdp-object PUBLIC
@@ -60,6 +73,7 @@ target_sources(mtdp-object PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/sink.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/source.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/stage.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/errno.h
 )
 target_compile_features(mtdp-object PUBLIC c_std_17)
 target_include_directories(mtdp-object
@@ -96,11 +110,13 @@ if(unity_FOUND)
     target_link_libraries(mtdp_fifo_test PRIVATE mtdp-object unity::framework)
 endif()
 
-add_executable(mtdp_infinite_datastream_example ${CMAKE_CURRENT_SOURCE_DIR}/examples/infinite_datastream.c)
-target_link_libraries(mtdp_infinite_datastream_example PRIVATE mtdp-object)
+if(UNIX)
+    add_executable(mtdp_infinite_datastream_example ${CMAKE_CURRENT_SOURCE_DIR}/examples/infinite_datastream.c)
+    target_link_libraries(mtdp_infinite_datastream_example PRIVATE mtdp-object)
 
-add_executable(mtdp_finite_datastream_example ${CMAKE_CURRENT_SOURCE_DIR}/examples/finite_datastream.c)
-target_link_libraries(mtdp_finite_datastream_example PRIVATE mtdp-object)
+    add_executable(mtdp_finite_datastream_example ${CMAKE_CURRENT_SOURCE_DIR}/examples/finite_datastream.c)
+    target_link_libraries(mtdp_finite_datastream_example PRIVATE mtdp-object)
+endif()
 
 set(CPACK_GENERATOR "TZST")
 include(CPack)
