@@ -38,7 +38,7 @@ along with this program.  If not, see
 #   include <unistd.h>
 #   include <limits.h>
 #   define mtdp_futex_wait(ftx, val) \
-    while(atomic_load(ftx) == val && syscall(SYS_futex, ftx, FUTEX_WAIT_PRIVATE, val, NULL) != 0) {}
+    while(atomic_load(ftx) == val && syscall(SYS_futex, (ftx), FUTEX_WAIT_PRIVATE, val, NULL) == 0) {}
 #   define mtdp_futex_notify_one(ftx) (syscall(SYS_futex, (ftx), FUTEX_WAKE_PRIVATE, 1))
 #   define mtdp_futex_notify_all(ftx) (syscall(SYS_futex, (ftx), FUTEX_WAKE_PRIVATE, INT_MAX))
 #elif _WIN32

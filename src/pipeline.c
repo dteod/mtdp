@@ -272,14 +272,14 @@ void mtdp_pipeline_wait(mtdp_pipeline *pipeline)
                     mtdp_futex_wait(&pipeline->stage_impls[i].done, 0);
                 }
                 mtdp_futex_wait(&pipeline->sink_impl.done, 0);
-                exit = pipeline->source_impl.done != 0;
+                exit = atomic_load(&pipeline->source_impl.done) == 1;
                 for(size_t i = 0; exit && i != pipeline->n_stages; ++i) {
-                    exit &= pipeline->stage_impls[i].done != 0;
+                    exit &= atomic_load(&pipeline->stage_impls[i].done) == 1;
                     if(!exit) {
                         continue;
                     }
                 }
-                exit &= pipeline->sink_impl.done != 0;
+                exit &= atomic_load(&pipeline->sink_impl.done) == 1;
             } while(!exit);
             *mtdp_errno_ptr_mutable() = MTDP_OK;
         } else {
