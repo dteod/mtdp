@@ -17,19 +17,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #define MTDP_BELL_H
 
 #include "futex.h"
-
 #include "thread.h"
 
-inline void mtdp_set_done(mtdp_futex* ftx)
-{
-    *ftx = 1;
-    mtdp_futex_notify_all(ftx);
-}
+#define mtdp_set_done(ftx) do {   \
+    atomic_store((ftx), 1);       \
+    mtdp_futex_notify_all(ftx);   \
+} while(0)
 
-inline void mtdp_unset_done(mtdp_futex* ftx)
-{
-    *ftx = 0;
-    mtdp_futex_notify_all(ftx);
-}
+#define mtdp_unset_done(ftx) do { \
+    atomic_store((ftx), 0);       \
+    mtdp_futex_notify_all(ftx);   \
+} while(0)
 
 #endif

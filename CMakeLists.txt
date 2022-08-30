@@ -21,45 +21,46 @@ find_package(unity)
 
 project(mtdp VERSION 0.1.0)
 
-default_setting(MTDP_STATIC_THREADSAFE                    true      )
-default_setting(MTDP_STATIC_THREADSAFE_LOCKFREE           true      )
-default_setting(MTDP_PIPELINE_STATIC_INSTANCES            0         )
-default_setting(MTDP_PIPE_VECTOR_STATIC_SIZE              0         )
-default_setting(MTDP_STAGE_VECTOR_STATIC_SIZE             0         )
-default_setting(MTDP_STAGE_IMPL_VECTOR_STATIC_SIZE        0         )
-default_setting(MTDP_BUFFER_POOL_STATIC_SIZE              0         )
-default_setting(MTDP_BUFFER_FIFO_BLOCKS                   0         )
-default_setting(MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE 0         )
-default_setting(MTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES   0         )
-default_setting(MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO      0.5       )
-default_setting(MTDP_BUFFER_FIFO_BLOCK_SIZE               16        )
-default_setting(MTDP_PIPELINE_CONSUMER_TIMEOUT_US         100000    )
+default_setting(MTDP_STATIC_THREADSAFE                      true      )
+default_setting(MTDP_STATIC_THREADSAFE_LOCKFREE             true      )
+default_setting(MTDP_PIPELINE_STATIC_INSTANCES              0         )
+default_setting(MTDP_PIPE_VECTOR_STATIC_SIZE                0         )
+default_setting(MTDP_STAGE_VECTOR_STATIC_SIZE               0         )
+default_setting(MTDP_STAGE_IMPL_VECTOR_STATIC_SIZE          0         )
+default_setting(MTDP_BUFFER_POOL_STATIC_SIZE                0         )
+default_setting(MTDP_BUFFER_FIFO_BLOCKS                     0         )
+default_setting(MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE   0         )
+default_setting(MTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES     0         )
+default_setting(MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO        0.5       )
+default_setting(MTDP_BUFFER_FIFO_BLOCK_SIZE                 16        )
+default_setting(MTDP_PIPELINE_CONSUMER_TIMEOUT_US           100000    )
+default_setting(MTDP_STRICT_ISO_C                           true     )
 
 add_library(mtdp-object OBJECT
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/futex.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/futex.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/bell.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/bell.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sem.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sem.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/thread.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/thread.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/worker.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/worker.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/errno.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/errno.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/buffer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/buffer.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/errno.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/pipe.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/pipe.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/source.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/source.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/stage.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/stage.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/sink.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sink.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/pipeline.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/sink.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/source.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/stage.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/atomic.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/bell.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/buffer.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/errno.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/futex.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/memory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/pipe.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pipeline.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/sem.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/sem.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/sink.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/source.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/stage.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/thread.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/thread.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/worker.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/worker.h
 )
 target_sources(mtdp-object PUBLIC
     FILE_SET HEADERS
@@ -95,6 +96,7 @@ target_compile_definitions(mtdp-object PUBLIC
     -DMTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO=${MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO}
     -DMTDP_BUFFER_FIFO_BLOCK_SIZE=${MTDP_BUFFER_FIFO_BLOCK_SIZE}
     -DMTDP_PIPELINE_CONSUMER_TIMEOUT_US=${MTDP_PIPELINE_CONSUMER_TIMEOUT_US}
+    -DMTDP_STRICT_ISO_C=${MTDP_STRICT_ISO_C}
 )
 if(UNIX)
     target_link_libraries(mtdp-object PUBLIC m atomic pthread)

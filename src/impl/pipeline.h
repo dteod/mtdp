@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "memory.h"
 
 #include "thread.h"
-#include <stdatomic.h>
+#include "atomic.h"
 
 struct s_mtdp_pipeline {
     mtdp_source_impl source_impl;
@@ -40,7 +40,7 @@ struct s_mtdp_pipeline {
 
     size_t n_stages;
     bool enabled, active;
-    _Atomic(uint32_t) destroying;
+    atomic_uint32_t destroying;
 };
 
 MTDP_DECLARE_INSTANCE(mtdp_pipeline)

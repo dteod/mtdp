@@ -16,9 +16,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mtdp/errno.h"
 #include "impl/errno.h"
 
-thread_local enum mtdp_error mtdp_errno_location = MTDP_OK;
+#if defined(_WIN32)
+static thread_local enum mtdp_error mtdp_errno_location = MTDP_OK;
+#else
+static _Thread_local enum mtdp_error mtdp_errno_location = MTDP_OK;
+#endif
 
-const int* mtdp_errno_ptr()
+enum mtdp_error* mtdp_errno_ptr_mutable()
 {
-    return (int*) &mtdp_errno_location;
+    return &mtdp_errno_location;
+}
+
+const enum mtdp_error* mtdp_errno_ptr()
+{
+    return &mtdp_errno_location;
 }

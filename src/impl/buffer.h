@@ -37,8 +37,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 void        mtdp_buffer_pool_init(mtdp_buffer_pool*);
 void        mtdp_buffer_pool_destroy(mtdp_buffer_pool*);
-bool        mtdp_buffer_pool_push_back(mtdp_buffer_pool *restrict self, const mtdp_buffer restrict e);
-mtdp_buffer  mtdp_buffer_pool_pop_back(mtdp_buffer_pool* self);
+bool        mtdp_buffer_pool_push_back(mtdp_buffer_pool* self, const mtdp_buffer e);
+mtdp_buffer mtdp_buffer_pool_pop_back(mtdp_buffer_pool* self);
 size_t      mtdp_buffer_pool_size(const mtdp_buffer_pool*);
 bool        mtdp_buffer_pool_resize(mtdp_buffer_pool *self, size_t size);
 

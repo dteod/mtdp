@@ -28,7 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
     static inline bool mtdp_buffer_pool_realloc(mtdp_buffer_pool* self, size_t elements) {
         mtdp_buffer* tmp;
 
-        tmp = self->capacity ? realloc(self->buffers, elements*sizeof(mtdp_buffer)) : calloc(elements, sizeof(mtdp_buffer));
+        tmp = (mtdp_buffer*) (self->capacity ? 
+            realloc(self->buffers, elements*sizeof(mtdp_buffer))
+            : calloc(elements, sizeof(mtdp_buffer)));
         if(tmp) {
             self->capacity = elements;
             self->buffers = tmp;
@@ -52,7 +54,7 @@ static inline bool mtdp_buffer_pool_preventive_realloc(mtdp_buffer_pool* self, s
         return false;
 #else
         static const size_t MIN_ALLOC_CAP = 16;
-        size_t cap = pow(2, ceil(log2(self->size + elements)));
+        size_t cap = (size_t) round(pow(2, ceil(log2((double) self->size + elements))));
         return mtdp_buffer_pool_realloc(self, cap > MIN_ALLOC_CAP ? cap : MIN_ALLOC_CAP);
 #endif
     }
@@ -80,7 +82,7 @@ void mtdp_buffer_pool_destroy(mtdp_buffer_pool* self)
 #endif
 }
 
-bool mtdp_buffer_pool_push_back(mtdp_buffer_pool *restrict self, const mtdp_buffer restrict e)
+bool mtdp_buffer_pool_push_back(mtdp_buffer_pool* self, const mtdp_buffer e)
 {
     if(!mtdp_buffer_pool_preventive_realloc(self, 1)) {
         return false;
@@ -111,14 +113,15 @@ bool mtdp_buffer_pool_resize(mtdp_buffer_pool *self, size_t size)
 #else
     size_t capacity = self->capacity;
 #endif
-    signed long delta = size - capacity;
+    signed long delta = (signed long) size - (signed long) capacity;
     if(delta < 0) {
         self->size += delta;
     } else if(delta > 0) {
 #if MTDP_BUFFER_POOL_STATIC_SIZE
         return false;
 #else
-        if((ret = mtdp_buffer_pool_realloc(self, size))) {
+        ret = mtdp_buffer_pool_realloc(self, size);
+        if(ret) {
             self->size += delta;
         }
 #endif
@@ -267,8 +270,8 @@ static inline void mtdp_buffer_fifo_rightshift_elements(mtdp_buffer_fifo* self)
         size_t cap;
 
         if(deque->blocks.capacity == deque->blocks.size) {
-            cap = pow(2, 1 + ceil(log2(deque->blocks.capacity)));
-            tmp = realloc(deque->blocks.blocks, cap*sizeof(mtdp_buffer_aggregate));
+            cap = (size_t) round(pow(2, 1 + ceil(log2((double) deque->blocks.capacity))));
+            tmp = (mtdp_buffer_aggregate*) realloc(deque->blocks.blocks, cap*sizeof(mtdp_buffer_aggregate));
             if(tmp) {
                 deque->blocks.blocks = tmp;
                 deque->blocks.capacity = cap;

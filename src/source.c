@@ -13,13 +13,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+
+#include <stddef.h>
+
 #include "mtdp/source.h"
 #include "impl/source.h"
 #include "impl/pipe.h"
-#include "bell.h"
-
-#include <stddef.h>
 #include "thread.h"
+#include "bell.h"
 
 #if defined(__GNUC__) || defined(__clang__)
 #   define likely(expr)    (__builtin_expect(!!(expr), 1))
@@ -74,8 +75,8 @@ void mtdp_source_create_thread(mtdp_source_impl* self)
 
 void mtdp_source_destroy(mtdp_source_impl* self)
 {
-    mtdp_worker_destroy(&self->worker);
     mtdp_set_done(&self->done);
+    mtdp_worker_destroy(&self->worker);
 }
 
 void mtdp_source_configure(mtdp_source_impl* self, mtdp_pipe* output_pipe)

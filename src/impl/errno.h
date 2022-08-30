@@ -17,8 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #define MTDP_IMPL_ERRNO_H
 
 #include "mtdp/errno.h"
-#include "thread.h"
 
-extern thread_local enum mtdp_error mtdp_errno_location;
+enum mtdp_error* mtdp_errno_ptr_mutable();
 
 #endif

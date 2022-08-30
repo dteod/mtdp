@@ -58,13 +58,13 @@ enum mtdp_error {
  * 
  * @return const enum mtdp_error* pointer to the mtdp_errno variable
  */
-const int* mtdp_errno_ptr();
+const enum mtdp_error* mtdp_errno_ptr();
 
 /**
  * @brief Latest return status for mtdp functions.
  * 
  * @note The retrieved value is thread local.
  */
-#define mtdp_errno (*(const enum mtdp_error*) mtdp_errno_ptr())
+#define mtdp_errno (*mtdp_errno_ptr())
 
 #endif

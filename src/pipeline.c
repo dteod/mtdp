@@ -83,20 +83,20 @@ mtdp_pipeline* mtdp_pipeline_create(const mtdp_pipeline_parameters* parameters)
     if(out) {
         if(!mtdp_stage_vector_resize(&out->stages, parameters->params.internal_stages)) {
             mtdp_pipeline_dealloc(out);
-            mtdp_errno_location = MTDP_NO_MEM;
+            *mtdp_errno_ptr_mutable() = MTDP_NO_MEM;
             return NULL;
         }
         if(!mtdp_stage_impl_vector_resize(&out->stage_impls, parameters->params.internal_stages)) {
             mtdp_stage_vector_destroy(&out->stages);
             mtdp_pipeline_dealloc(out);
-            mtdp_errno_location = MTDP_NO_MEM;
+            *mtdp_errno_ptr_mutable() = MTDP_NO_MEM;
             return NULL;
         }
         if(!mtdp_pipe_vector_resize(&out->pipes, parameters->params.internal_stages + 1)) {
             mtdp_stage_impl_vector_destroy(&out->stage_impls);
             mtdp_stage_vector_destroy(&out->stages);
             mtdp_pipeline_dealloc(out);
-            mtdp_errno_location = MTDP_NO_MEM;
+            *mtdp_errno_ptr_mutable() = MTDP_NO_MEM;
             return NULL;
         }
         for(size_t i = 0; i < parameters->params.internal_stages + 1; ++i) {
@@ -108,15 +108,15 @@ mtdp_pipeline* mtdp_pipeline_create(const mtdp_pipeline_parameters* parameters)
                 mtdp_stage_impl_vector_destroy(&out->stage_impls);
                 mtdp_stage_vector_destroy(&out->stages);
                 mtdp_pipeline_dealloc(out);
-                mtdp_errno_location = MTDP_NO_MEM;
+                *mtdp_errno_ptr_mutable() = MTDP_NO_MEM;
                 return NULL;
             }
         }
         out->n_stages = parameters->params.internal_stages;
         mtdp_pipeline_configure(out);
-        mtdp_errno_location = MTDP_OK;
+        *mtdp_errno_ptr_mutable() = MTDP_OK;
     } else {
-        mtdp_errno_location = MTDP_BAD_PTR;
+        *mtdp_errno_ptr_mutable() = MTDP_BAD_PTR;
     }
     return out;
 }
@@ -132,9 +132,9 @@ void mtdp_pipeline_destroy(mtdp_pipeline *pipeline)
         mtdp_stage_impl_vector_destroy(&pipeline->stage_impls);
         mtdp_stage_vector_destroy(&pipeline->stages);
         mtdp_pipeline_dealloc(pipeline);
-        mtdp_errno_location = MTDP_OK;
+        *mtdp_errno_ptr_mutable() = MTDP_OK;
     } else {
-        mtdp_errno_location = MTDP_BAD_PTR;
+        *mtdp_errno_ptr_mutable() = MTDP_BAD_PTR;
     }
 }
 
@@ -169,13 +169,13 @@ bool mtdp_pipeline_enable(mtdp_pipeline* pipeline)
             mtdp_source_create_thread(&pipeline->source_impl);
             pipeline->enabled = true;
             pipeline->active = false;
-            mtdp_errno_location = MTDP_OK;
+            *mtdp_errno_ptr_mutable() = MTDP_OK;
             return true;
         } else {
-            mtdp_errno_location = MTDP_ENABLED;
+            *mtdp_errno_ptr_mutable() = MTDP_ENABLED;
         }
     } else {
-        mtdp_errno_location = MTDP_BAD_PTR;
+        *mtdp_errno_ptr_mutable() = MTDP_BAD_PTR;
     }
     return false;
 }
@@ -198,13 +198,13 @@ bool mtdp_pipeline_disable(mtdp_pipeline* pipeline)
             pipeline->active = false;
             pipeline->enabled = false;
             mtdp_unset_done(&pipeline->destroying);
-            mtdp_errno_location = MTDP_OK;
+            *mtdp_errno_ptr_mutable() = MTDP_OK;
             return true;
         } else {
-            mtdp_errno_location = MTDP_NOT_ENABLED;
+            *mtdp_errno_ptr_mutable() = MTDP_NOT_ENABLED;
         }
     } else {
-        mtdp_errno_location = MTDP_BAD_PTR;
+        *mtdp_errno_ptr_mutable() = MTDP_BAD_PTR;
     }
     return false;
 }
@@ -214,7 +214,7 @@ bool mtdp_pipeline_start(mtdp_pipeline* pipeline)
     if(pipeline) {
         if(pipeline->enabled) {
             if(pipeline->active) {
-                mtdp_errno_location = MTDP_ACTIVE;
+                *mtdp_errno_ptr_mutable() = MTDP_ACTIVE;
             } else {
                 mtdp_worker_enable(&pipeline->sink_impl.worker);
                 for(size_t i = pipeline->n_stages; i--; ) {
@@ -222,14 +222,14 @@ bool mtdp_pipeline_start(mtdp_pipeline* pipeline)
                 }
                 mtdp_worker_enable(&pipeline->source_impl.worker);
                 pipeline->active = true;
-                mtdp_errno_location = MTDP_OK;
+                *mtdp_errno_ptr_mutable() = MTDP_OK;
                 return true;
             }
         } else {
-            mtdp_errno_location = MTDP_NOT_ENABLED;
+            *mtdp_errno_ptr_mutable() = MTDP_NOT_ENABLED;
         }
     } else {
-        mtdp_errno_location = MTDP_BAD_PTR;
+        *mtdp_errno_ptr_mutable() = MTDP_BAD_PTR;
     }
     return false;
 }
@@ -239,22 +239,22 @@ bool mtdp_pipeline_stop(mtdp_pipeline* pipeline)
     if(pipeline) {
         if(pipeline->enabled) {
             if(!pipeline->active) {
-                mtdp_errno_location = MTDP_ENABLED;
+                *mtdp_errno_ptr_mutable() = MTDP_ENABLED;
             } else {
                 mtdp_worker_disable(&pipeline->source_impl.worker);
                 for(size_t i = 0; i != pipeline->n_stages; ++i) {
                     mtdp_worker_disable(&pipeline->stage_impls[i].worker);
                 }
                 mtdp_worker_disable(&pipeline->sink_impl.worker);
-                mtdp_errno_location = MTDP_OK;
+                *mtdp_errno_ptr_mutable() = MTDP_OK;
                 pipeline->active = false;
                 return true;
             }
         } else {
-            mtdp_errno_location = MTDP_NOT_ENABLED;
+            *mtdp_errno_ptr_mutable() = MTDP_NOT_ENABLED;
         }
     } else {
-        mtdp_errno_location = MTDP_BAD_PTR;
+        *mtdp_errno_ptr_mutable() = MTDP_BAD_PTR;
     }
     return false;
 }
@@ -275,14 +275,17 @@ void mtdp_pipeline_wait(mtdp_pipeline *pipeline)
                 exit = pipeline->source_impl.done != 0;
                 for(size_t i = 0; exit && i != pipeline->n_stages; ++i) {
                     exit &= pipeline->stage_impls[i].done != 0;
+                    if(!exit) {
+                        continue;
+                    }
                 }
                 exit &= pipeline->sink_impl.done != 0;
             } while(!exit);
-            mtdp_errno_location = MTDP_OK;
+            *mtdp_errno_ptr_mutable() = MTDP_OK;
         } else {
-            mtdp_errno_location = MTDP_NOT_ENABLED;
+            *mtdp_errno_ptr_mutable() = MTDP_NOT_ENABLED;
         }
     } else {
-        mtdp_errno_location = MTDP_BAD_PTR;
+        *mtdp_errno_ptr_mutable() = MTDP_BAD_PTR;
     }
 }

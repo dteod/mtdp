@@ -135,7 +135,7 @@ typedef struct {
      * @details Even though for simple stages this may be an overkill,
      * bigger and more complex stages may incorporate mechanisms to
      * communicate partial results to external threads, or even just
-     * to provide a configuration mechnism. It is optional to set.
+     * to provide a configuration mechanism. It is optional to set.
      */
     mtdp_stage_data      self;
 

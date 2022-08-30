@@ -17,14 +17,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #define MTDP_WORKER_H
 
 #include <stdbool.h>
-#include <stdatomic.h>
+#include "atomic.h"
 #include "thread.h"
 
 typedef struct {
     thrd_t thread;
     cnd_t cv;
     mtx_t mutex;
-    atomic_bool enabled, destroyed;
+    bool enabled, destroyed;
 
     const char* name;
     thrd_start_t cb;

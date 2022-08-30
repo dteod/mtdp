@@ -26,10 +26,11 @@ MTDP_MEMORY_ACCESS void  Type##_dealloc(Type*);
 
 #if MTDP_STATIC_THREADSAFE
 #   if MTDP_STATIC_THREADSAFE_LOCKFREE
-#       include <stdatomic.h>
+#       include "thread.h"
+#       include "atomic.h"
 #       define MTDP_DEFINE_STATIC_INSTANCE(Type, Name)                          \
         static Type Name;                                                       \
-        static atomic_flag Name##_owned;                                        \
+        static atomic_flag Name##_owned = ATOMIC_FLAG_INIT;                     \
         MTDP_MEMORY_ACCESS Type* Type##_alloc() {                               \
             if(!atomic_flag_test_and_set(&Name##_owned)) {                      \
                 return &Name;                                                   \

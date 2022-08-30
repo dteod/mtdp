@@ -84,7 +84,23 @@ static int mtdp_stage_routine(void* data)
         }
     }
     if(self->context.ready_to_pull) {
+#if defined(__GNUC__) && !MTDP_STRICT_ISO_C
+#    if !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#    else
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpedantic"
+#    endif
+#endif
         if(!mtdp_semaphore_try_acquire_for(&self->input_pipe->semaphore, MTDP_PIPELINE_CONSUMER_TIMEOUT_US)) {
+#if defined(__GNUC__) && !MTDP_STRICT_ISO_C
+#    if !defined(__clang__)
+#pragma GCC diagnostic pop
+#    else
+#pragma clang diagnostic pop
+#    endif
+#endif
             mtdp_set_done(&self->done);
             thrd_yield();
             return 0;

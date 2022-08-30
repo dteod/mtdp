@@ -27,11 +27,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #   include <processthreadsapi.h>
 #endif
 
-#define thrd_check(X) do { int ret; if((ret = (X)) != thrd_success) { mtdp_errno_location = ret == thrd_nomem ? MTDP_NO_MEM : MTDP_THRD_ERROR; return false; } } while(false)
-#define mtx_check(X) do { int ret; if((ret = (X)) != thrd_success) { mtdp_errno_location = ret == thrd_nomem ? MTDP_NO_MEM : MTDP_MTX_ERROR; return false; } } while(false)
-#define cnd_check(X) do { int ret; if((ret = (X)) != thrd_success) { mtdp_errno_location = ret == thrd_nomem ? MTDP_NO_MEM : MTDP_CND_ERROR; return false; } } while(false)
+#define thrd_check(X) do { int ret = (X); if(ret != thrd_success) { *mtdp_errno_ptr_mutable() = (ret  == thrd_nomem ? MTDP_NO_MEM : MTDP_THRD_ERROR); return false; } } while(false)
+#define mtx_check(X)  do { int ret = (X); if(ret != thrd_success) { *mtdp_errno_ptr_mutable() = (ret  == thrd_nomem ? MTDP_NO_MEM : MTDP_MTX_ERROR ); return false; } } while(false)
+#define cnd_check(X)  do { int ret = (X); if(ret != thrd_success) { *mtdp_errno_ptr_mutable() = (ret  == thrd_nomem ? MTDP_NO_MEM : MTDP_CND_ERROR ); return false; } } while(false)
 
-static int mtdp_worker_routine(void* data)
+#if defined(_WIN32)
+#    define MTDP_WORKER_RETURN DWORD
+#else
+#    define MTDP_WORKER_RETURN int
+#endif
+
+static MTDP_WORKER_RETURN mtdp_worker_routine(void* data)
 {
     mtdp_worker *worker = (mtdp_worker*) data;
     if(worker->name && strlen(worker->name)) {
@@ -41,10 +47,10 @@ static int mtdp_worker_routine(void* data)
         size_t name_size = strlen(worker->name);
         if(name_size) {
             int sz = MultiByteToWideChar(CP_THREAD_ACP, MB_PRECOMPOSED, worker->name, -1, NULL, 0);
-            WCHAR* utf16_name = malloc(sizeof(WCHAR)*sz);
+            WCHAR* utf16_name = (WCHAR*) malloc(sizeof(WCHAR)*sz);
             MultiByteToWideChar(CP_THREAD_ACP, MB_PRECOMPOSED, worker->name, -1, utf16_name, sz);
             SetThreadDescription(GetCurrentThread(), utf16_name);
-            delete(utf16_name);
+            free(utf16_name);
         }
 #endif
     }
@@ -65,15 +71,15 @@ static int mtdp_worker_routine(void* data)
 
 bool mtdp_worker_init(mtdp_worker *worker)
 {
-    int ret;
+    int out;
 
     worker->enabled = false;
     worker->destroyed = false;
     cnd_check(cnd_init(&worker->cv));
-    if((ret = mtx_init(&worker->mutex, mtx_plain)) != thrd_success) {
+    if((out = mtx_init(&worker->mutex, mtx_plain)) != thrd_success) {
         /* No macro here, I have to destroy the cv. */
         cnd_destroy(&worker->cv);
-        mtdp_errno_location = ret == thrd_nomem ? MTDP_NO_MEM : MTDP_MTX_ERROR;
+        *mtdp_errno_ptr_mutable() = (out == thrd_nomem ? MTDP_NO_MEM : MTDP_MTX_ERROR);
         return false;
     }
     worker->name = NULL;

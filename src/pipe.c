@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "thread.h"
 
-static inline void mtdp_lock2(mtx_t *restrict m1, mtx_t *restrict m2)
+static inline void mtdp_lock2(mtx_t *__restrict m1, mtx_t *__restrict m2)
 {
     while(true) {
         mtx_lock(m1);
@@ -70,7 +70,7 @@ mtdp_buffer* mtdp_pipe_resize(mtdp_pipe* self, size_t n_buffers)
     ptrdiff_t delta;
     size_t total, empty, nonempty = 0;
 
-    mtdp_errno_location =  self ? MTDP_OK : MTDP_BAD_PTR;
+    *mtdp_errno_ptr_mutable() =  self ? MTDP_OK : MTDP_BAD_PTR;
     if(self) {
         mtdp_lock2(&self->pool_mutex, &self->fifo_mutex);
         empty = mtdp_buffer_pool_size(&self->pool);
@@ -79,7 +79,7 @@ mtdp_buffer* mtdp_pipe_resize(mtdp_pipe* self, size_t n_buffers)
         delta = (ptrdiff_t)( (ptrdiff_t) n_buffers - (ptrdiff_t) total );
         if(delta > 0) {
             if(!mtdp_buffer_pool_resize(&self->pool, empty + delta)) {
-                mtdp_errno_location = MTDP_NO_MEM;
+                *mtdp_errno_ptr_mutable() = MTDP_NO_MEM;
                 ret = NULL;
             } else {
                 ret = self->pool.buffers;
@@ -95,7 +95,7 @@ mtdp_buffer* mtdp_pipe_resize(mtdp_pipe* self, size_t n_buffers)
                 mtdp_buffer_pool_resize(&self->pool, empty + delta);
                 if((size_t) -delta <= total) {
                     /* Removing oldest entries from the ready deque. */
-                    for(int i = total + delta; i--; ) {
+                    for(size_t i = total + delta; i--; ) {
                         /* We are shrinking here so no check is required. */
                         mtdp_buffer_fifo_pop_front(&self->fifo, NULL);
                     }
@@ -113,7 +113,7 @@ mtdp_buffer* mtdp_pipe_resize(mtdp_pipe* self, size_t n_buffers)
 
 mtdp_buffer* mtdp_pipe_buffers(mtdp_pipe* self)
 {
-    mtdp_errno_location =  self ? MTDP_OK : MTDP_BAD_PTR;
+    *mtdp_errno_ptr_mutable() =  self ? MTDP_OK : MTDP_BAD_PTR;
     return self ? self->pool.buffers : NULL;
 }
 
@@ -150,7 +150,13 @@ bool mtdp_pipe_init(mtdp_pipe* pipe)
         mtx_destroy(&pipe->fifo_mutex);
         return false;
     }
-    mtdp_semaphore_init(&pipe->semaphore);
+    bool ret = mtdp_semaphore_init(&pipe->semaphore);
+    if(!ret) {
+        mtx_destroy(&pipe->pool_mutex);
+        mtx_destroy(&pipe->fifo_mutex);
+        mtdp_buffer_fifo_destroy(&pipe->fifo);
+        return false;
+    }
     return true;
 }
 
@@ -158,6 +164,7 @@ void mtdp_pipe_destroy(mtdp_pipe* pipe)
 {
     mtdp_buffer_pool_destroy(&pipe->pool);
     mtdp_buffer_fifo_destroy(&pipe->fifo);
+    mtdp_semaphore_destroy(&pipe->semaphore);
 }
 
 mtdp_buffer mtdp_pipe_get_empty_buffer(mtdp_pipe* self)
