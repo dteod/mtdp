@@ -41,3 +41,7 @@ const enum mtdp_error* mtdp_errno_ptr()
 {
     return &mtdp_errno_location;
 }
+
+#ifdef __cplusplus
+}
+#endif
