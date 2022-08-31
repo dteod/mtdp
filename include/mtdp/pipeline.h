@@ -30,6 +30,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mtdp/stage.h"
 #include "mtdp/sink.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief Opaque struct used to manage a multi-threaded data pipeline.
  * 
