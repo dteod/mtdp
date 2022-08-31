@@ -1,0 +1,4 @@
+<map id="mtdp_source" name="mtdp_source">
+<area shape="rect" id="node1" title="Struct to be filled by the user with data describing the source stage." alt="" coords="30,109,127,136"/>
+<area shape="rect" id="node2" href="$structmtdp__source__context.html" title="Data to be used by the source callback at every iteration." alt="" coords="5,5,152,32"/>
+</map>

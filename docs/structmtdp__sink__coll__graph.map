@@ -1,0 +1,4 @@
+<map id="mtdp_sink" name="mtdp_sink">
+<area shape="rect" id="node1" title="Struct to be filled by the user with data describing the sink stage." alt="" coords="30,109,113,136"/>
+<area shape="rect" id="node2" href="$structmtdp__sink__context.html" title="Data to be used by the sink callback at every iteration." alt="" coords="5,5,137,32"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="include/mtdp/buffer.h" name="include/mtdp/buffer.h">
+<area shape="rect" id="node1" title="Header containing the mtdp_buffer alias." alt="" coords="243,5,385,32"/>
+<area shape="rect" id="node2" href="$pipe_8h.html" title="Header containing the pipe opaque struct and APIs to interact with it." alt="" coords="5,80,140,107"/>
+<area shape="rect" id="node5" href="$sink_8h.html" title="Header containing the mtdp_sink struct, API and related utilities." alt="" coords="164,80,299,107"/>
+<area shape="rect" id="node6" href="$source_8h.html" title="Header containing the mtdp_source struct, API and related utilities." alt="" coords="323,80,473,107"/>
+<area shape="rect" id="node7" href="$stage_8h.html" title="Header containing the mtdp_stage struct, API and related utilities." alt="" coords="497,80,640,107"/>
+<area shape="rect" id="node3" href="$pipeline_8h.html" title="Header containing the main mtdp_pipeline struct and API." alt="" coords="237,155,391,181"/>
+<area shape="rect" id="node4" href="$mtdp_8h.html" title="Umbrella header used to import libmtdp." alt="" coords="261,229,367,256"/>
+</map>

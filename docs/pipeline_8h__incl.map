@@ -1,0 +1,11 @@
+<map id="include/mtdp/pipeline.h" name="include/mtdp/pipeline.h">
+<area shape="rect" id="node1" title="Header containing the main mtdp_pipeline struct and API." alt="" coords="153,5,308,32"/>
+<area shape="rect" id="node2" href="$pipe_8h.html" title="Header containing the pipe opaque struct and APIs to interact with it." alt="" coords="243,80,333,107"/>
+<area shape="rect" id="node7" href="$source_8h.html" title="Header containing the mtdp_source struct, API and related utilities." alt="" coords="358,80,463,107"/>
+<area shape="rect" id="node8" href="$stage_8h.html" title="Header containing the mtdp_stage struct, API and related utilities." alt="" coords="5,80,104,107"/>
+<area shape="rect" id="node9" href="$sink_8h.html" title="Header containing the mtdp_sink struct, API and related utilities." alt="" coords="128,80,219,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="251,155,317,181"/>
+<area shape="rect" id="node4" title=" " alt="" coords="341,155,411,181"/>
+<area shape="rect" id="node5" title=" " alt="" coords="29,155,104,181"/>
+<area shape="rect" id="node6" href="$buffer_8h.html" title="Header containing the mtdp_buffer alias." alt="" coords="128,155,227,181"/>
+</map>

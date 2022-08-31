@@ -1,0 +1,4 @@
+<map id="mtdp_pipeline_parameters" name="mtdp_pipeline_parameters">
+<area shape="rect" id="node1" title="Convenience union used to pad the mtdp_pipeline_params struct, for future implementations." alt="" coords="5,95,180,121"/>
+<area shape="rect" id="node2" href="$structmtdp__pipeline__params.html" title="Struct used as pipeline creation parameters, to be filled with configuration data." alt="" coords="17,5,169,32"/>
+</map>
