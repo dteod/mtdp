@@ -22,6 +22,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef MTDP_ERRNO_H
 #define MTDP_ERRNO_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief Enumeration describing possible causes of faults.
  */
@@ -72,5 +76,9 @@ const enum mtdp_error* mtdp_errno_ptr();
  * @note The retrieved value is thread local.
  */
 #define mtdp_errno (*mtdp_errno_ptr())
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

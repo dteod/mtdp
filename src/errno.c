@@ -16,11 +16,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mtdp/errno.h"
 #include "impl/errno.h"
 
-#if defined(_WIN32)
-static thread_local enum mtdp_error mtdp_errno_location = MTDP_OK;
-#else
-static _Thread_local enum mtdp_error mtdp_errno_location = MTDP_OK;
+/* 
+    As of 31/08/2022 _Thread_local was not available on MSVC compiling as C,
+    the result is to use C++ to compile errno.c using thread_local from C++.
+    But I am still mangling mtdp_errno_* functions as C
+    to make them linkable to other C files compiled as C.
+*/
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+#if !defined(_WIN32)
+#define thread_local _Thread_local 
+#endif
+
+static thread_local enum mtdp_error mtdp_errno_location = MTDP_OK;
 
 enum mtdp_error* mtdp_errno_ptr_mutable()
 {

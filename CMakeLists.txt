@@ -56,11 +56,16 @@ add_library(mtdp-object OBJECT
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sink.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/source.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/stage.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/thread.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/thread.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/worker.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/worker.h
 )
+if(WIN32)
+    # As of 31/08/22 _Thread_local is not implemented in MSVC
+    # compiling as C so we compile errno as C++ (with proper
+    # name mangling set in the source code)
+    set_property(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/errno.c PROPERTY LANGUAGE CXX)
+endif()
 if(${CMAKE_VERSION} GREATER_EQUAL 3.23)
     target_sources(mtdp-object PUBLIC
         FILE_SET HEADERS

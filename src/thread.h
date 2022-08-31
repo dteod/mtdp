@@ -23,8 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #if defined(_WIN32)
 #   include <windows.h>
 
-#define thread_local _Thread_local
-
 typedef HANDLE thrd_t;
 
 typedef int(*thrd_start_t)(void*);
@@ -40,8 +38,7 @@ enum {
 #define once_flag atomic_flag;
 
 #define ONCE_FLAG_INIT { 0 }
-inline void mtdp_do_nothing() {}
-#define call_once(onceflag, fun) ( (atomic_flag_test_and_set(onceflag) ? mtdp_do_nothing : (fun))() )
+#define call_once(onceflag, fun) do { ( if(atomic_flag_test_and_set(onceflag)) (fun)(); } while(0)
 #define thrd_create(t, f, data) (*(t) = CreateThread(NULL, 0, f, data, 0, NULL), ((t) ? thrd_success : ((GetLastError() == ERROR_NOT_ENOUGH_MEMORY) ? thrd_nomem : thrd_error)))
 inline int thrd_join(thrd_t t, int* ret)
 {

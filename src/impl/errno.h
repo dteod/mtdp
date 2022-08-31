@@ -18,6 +18,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "mtdp/errno.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 enum mtdp_error* mtdp_errno_ptr_mutable();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
