@@ -76,7 +76,7 @@ The following parameters affect the memory allocation strategy, to be set when c
 |`MTDP_STAGE_IMPL_VECTOR_STATIC_SIZE`           | 0       | When not zero, embeds a static array of fixed size in the pipeline for the stage implementations. |
 |`MTDP_BUFFER_POOL_STATIC_SIZE`                 | 0       | When not zero, embeds a static array of fixed size in the pipes for the buffers. Attempts to resize a buffer pool to a number bigger that this (when not zero) will fail.
 |`MTDP_BUFFER_FIFO_BLOCKS`                      | 0       | When not zero, embeds a fixed number of FIFO blocks in the pipe's buffer FIFO. |
-|`MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE`    | 0       |  |
+|`MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE`    | 0       | When not zero, embeds a static array of fixed size in the pipe's buffer FIFO for keeping track of the blocks. |
 |`MTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES`      | 0       | Number of buffer fifo blocks to store in static global memory. When not zero, enables static global allocation strategy for `mtdp_buffer_fifo_block` instances. |
 |`MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO`         | 0.5     | Ratio under which a buffer shift is performed when at the edge of a FIFO block; above this value more memory is requested from the FIFO. |
 
