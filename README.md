@@ -36,7 +36,7 @@ When finished, remember to deallocate the resources:
 2. retrieve and deallocate the buffers you provided
 3. destroy the pipeline
 
-For additional details, consult the documentation. If you have Doxygen installed you can build it building the `docs` CMake target.
+For additional details, consult the [documentation](https://dteod.github.io/mtdp/). If you have Doxygen installed you can build it building the `docs` CMake target.
 
 
 ### Concurrency
