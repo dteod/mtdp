@@ -7,7 +7,7 @@ mtdp
 
 Pipelines are used to increase the [throughput](https://en.wikipedia.org/wiki/Network_throughput) of a data processing while maintaining almost equal [latency](https://en.wikipedia.org/wiki/Latency_(engineering)) by performing in parallel what are commonly performed sequentially. It is best suited for the following two cases:
 1. to speed up calculations performed on a fixed, finite datastream
-2. to support an infinite datastream in a real-time process
+2. to support an infinite datastream in a [real-time process](https://en.wikipedia.org/wiki/Real-time_computing#Real-time_in_digital_signal_processing)
 
 ## Compatibility and dependencies
 The library is implemented in pure C11 without dependencies except a C11 compliant runtime. It is currently supported in *NIX and Windows (not yet tested). Easy porting can be performed in environments supporting the C11 `<threads.h>` header (some efforts shall be made in porting futexes and semaphores in those cases).
