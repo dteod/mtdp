@@ -16,6 +16,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef MTDP_PIPE_H
 #define MTDP_PIPE_H
 
+/** 
+ * @file 
+ * 
+ * @brief Header containing the pipe opaque struct and APIs to interact with it.
+ * 
+ * @details Avoid importing this file in user code, prefer the mtdp.h umbrella header.
+*/
+
 #ifdef __cplusplus
 #   include <cstdint>
 #   include <cstddef>
@@ -47,14 +55,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
  * int main()
  * {
  *     register_signals();
- *     mtdp_pipeline pipeline = mtdp_pipeline_create(STAGES);
+ *     mtdp_pipeline* pipeline = mtdp_pipeline_create(STAGES);
  *     // ... 
- *     mtdp_pipe* pipes = mtdp_pipeline_get_pipes(pipeline);
- *     for(int i = STAGES; --i; ) {
- *         ret = mtdp_pipe_resize(&pipes[i], nbufs);
- *         if(ret) {
- *             for(mtdp_buffer* buf = mtdp_pipe_buffers(&pipes[i]); --nbufs;) {
- *                 my_buf_init(buf++);
+ *     mtdp_buffer* buf;
+ *     mtdp_pipe* pipes_head = mtdp_pipeline_get_pipes(pipeline);
+ *     for(int i = STAGES; --i; pipes_head = mtdp_pipe_next(pipes_head)) {
+ *         buf = mtdp_pipe_resize(pipes_head, nbufs = NBUFS);
+ *         if(buf) {
+ *             for(; --nbufs; buf++) {
+ *                 my_buf_init(buf);
  *             }
  *         }
  *         else {
@@ -68,12 +77,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
  *     // ...
  *     mtdp_pipeline_disable(pipeline);
  *     // ...
- *     pipes = mtdp_pipeline_pipes(pipeline);
- *     for(int i = STAGES + 1; i--; ) {
- *         for(mtdp_buffer* buf = mtdp_pipe_buffers(&pipes[i]); --nbufs; buf++) {
+ *     pipes_head = mtdp_pipeline_pipes(pipeline);
+ *     for(int i = STAGES + 1; i--; pipes_head = mtdp_pipe_next(pipes_head)) {
+ *         for(buf = mtdp_pipe_buffers(pipes_head); --nbufs; buf++)) {
  *             my_buf_destroy(buf);
  *         }
- *         mtdp_pipe_resize(&pipes[i], 0);
  *     }
  *     mtdp_pipeline_destroy(pipeline);
  * }
@@ -88,7 +96,7 @@ typedef struct s_mtdp_pipe mtdp_pipe;
  * in client code. Use this function to retrieve the next entry.
  * 
  * @warning No bounds checking is performed. The number of times
- * this function may be called equals the `internal_stages' parameter
+ * this function may be called equals the `internal_stages` parameter
  * used to instantiate the pipeline.
  * 
  * @param pipe the pipe to retrieve the next entry from
@@ -105,8 +113,7 @@ mtdp_pipe* mtdp_pipe_next(mtdp_pipe* pipe);
  * - remove buffers from its internal structures with these priorities:
  *      1. shrink the pool of empty buffers;
  *      2. remove the fifo entries from the oldest one,
- *         if the buffer reduction exceed the number of empty buffers;
- *      3. also remove the stage, if a resize of 0 is requested.
+ *         if the buffer reduction exceeds the number of empty buffers;
  * 
  * @note This function is not thread-safe, and it should not be called
  * while the pipeline is active. It is only useful to preallocate memory
@@ -117,7 +124,7 @@ mtdp_pipe* mtdp_pipe_next(mtdp_pipe* pipe);
  * Always shrink after proper buffer destruction.
  * 
  * @warning A data reduction while the pipeline is operating
- * may lead to a data loss in addition to a memory leak.
+ * may lead to a data loss if not in a `malloc`d environment.
  * 
  * @param pipe the pipe to resize
  * @param n_buffers the number of buffers required for the resize
@@ -138,7 +145,7 @@ mtdp_buffer* mtdp_pipe_resize(mtdp_pipe *pipe, size_t n_buffers);
  * 
  * @warning Even though this function is thread-safe, accessing the buffers
  * while the pipeline is operating will more likely than not corrupt the data,
- * or cause a segfault in a `malloc'd runtime. So avoid that.
+ * or cause a segfault in a `malloc`d runtime. So avoid that.
  * 
  * @param pipe the pipe to retrieve the buffers from
  * @return mtdp_buffer* a linear array of buffers whose size

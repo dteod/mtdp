@@ -13,6 +13,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+/** 
+ * @file 
+ * 
+ * @brief Header containing the mtdp_source struct, API and related utilities.
+ * 
+ * @details Avoid importing this file in user code, prefer the mtdp.h umbrella header.
+*/
+
 #ifndef MTDP_SOURCE_H
 #define MTDP_SOURCE_H
 
@@ -70,7 +78,7 @@ typedef struct {
 typedef void(*mtdp_source_callback)(mtdp_source_context*);
 
 /**
- * @brief Struct to be filled with user data.
+ * @brief Struct to be filled by the user with data describing the source stage.
  * 
  * @details This struct is to be filled by the user with data describing
  * how the source will process the buffers, together with some additional
@@ -123,12 +131,21 @@ typedef struct {
     mtdp_source_callback process;
 } mtdp_source;
 
+/**
+ * @brief Signals that data will not be produced from the source anymore.
+ * 
+ * @details Use this function from within the source stage to
+ * instruct the pipeline that input data is finished and to
+ * wake any thread waiting on the pipeline with 
+ * mtdp_pipeline_wait. 
+ * 
+ */
 void mtdp_source_finished(mtdp_source_context*);
 
 /**
  * @brief This function may be called from within the source callback to
  * understand if a stop or a disable was requested from the pipeline,
- * in order to prehemptively stop any long-lasting processings.
+ * in order to let the stage preemptively stop any long-lasting processings and yield the thread.
  * 
  * @return bool wether a stop was requested (true) or not (false)
  */

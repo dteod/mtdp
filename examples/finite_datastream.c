@@ -131,8 +131,8 @@ int main()
 
     /* 2. Configure the pipes telling them how many buffers to handle, for each pipe.
           Also configure the buffers in the same cycle.
-          These can be simple byte-level `malloc's
-          up to complex C++ classes created with `new'. */
+          These can be simple byte-level `malloc`s
+          up to complex C++ classes created with `new`. */
     pipe = mtdp_pipeline_get_pipes(pipeline);
     for(size_t p = 0; p != 1 + N_STAGES; p++, pipe = mtdp_pipe_next(pipe)) {
         if(!mtdp_pipe_resize(pipe, N_BUFFERS)) {
@@ -211,6 +211,7 @@ int main()
     thrd_join(t3, NULL);
 
     /* 7. A pipeline that finished execution autonomously still has to be disabled manually. */
+    printf("disabling pipeline\n");
     mtdp_pipeline_disable(pipeline);
 
     /* 8. Remember to deallocate the user buffers. */
@@ -221,7 +222,6 @@ int main()
             printf("deleting buffer[%lu] at %p\n", i, buffers[i]);
             free(buffers[i]); /* Buffer destruction */
         }
-        mtdp_pipe_resize(pipe, 0);
     }
 
     /* 9. Destroy the pipeline and release all the memory it was carrying. */

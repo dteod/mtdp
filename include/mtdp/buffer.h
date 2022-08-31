@@ -13,11 +13,19 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+/** 
+ * @file 
+ * 
+ * @brief Header containing the mtdp_buffer alias.
+ * 
+ * @details Avoid importing this file in user code, prefer the mtdp.h umbrella header.
+*/
+
 #ifndef MTDP_BUFFER_H
 #define MTDP_BUFFER_H
 
 /**
- * @brief Convenience wrapper used to abstract pointer syntax.
+ * @brief Convenience alias used to abstract pointer syntax.
  */
 typedef void* mtdp_buffer;
 

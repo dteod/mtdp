@@ -13,26 +13,25 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+/** 
+ * @file 
+ * 
+ * @brief Header containing the main mtdp_pipeline struct and API.
+ * 
+ * @details Avoid importing this file in user code, prefer the mtdp.h umbrella header.
+*/
+
+
 #ifndef MTDP_PIPELINE_H
 #define MTDP_PIPELINE_H
 
-#ifdef __cplusplus
-#   include <cstdint>
-#   include <cstddef>
-    extern "C" {
-#else
-#   include <stdint.h>
-#   include <stddef.h>
-#endif
-
-#include "mtdp/buffer.h"
 #include "mtdp/pipe.h"
 #include "mtdp/source.h"
 #include "mtdp/stage.h"
 #include "mtdp/sink.h"
 
 /**
- * @brief Opaque struct used to manage a multi-threaded DSP pipeline.
+ * @brief Opaque struct used to manage a multi-threaded data pipeline.
  * 
  * @details A pipeline is a struct containing multiple threads operating
  * concurrently and synchronously on a data stream.
@@ -52,7 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
  * 
  * Operation on the pipeline may be stopped and disabled both from the outside
  * - using the API provided in this header - or from the inside by the
- * source stage - using the `mtdp_source_finished` API (useful when operating
+ * source stage - using the mtdp_source_finished API (useful when operating
  * on files or other streams with a fixed length). In the former case
  * data already present in the pipeline and not already flushed by the sink
  * will be discarded, while in the latter case the pipeline will finish
@@ -90,7 +89,7 @@ typedef struct s_mtdp_pipeline mtdp_pipeline;
  * @note This struct may be subject to changes in future
  * releases adding fields that may cover up to 1024 bytes.
  * Use the pipeline_parameters convenience union to update the
- * library (if shared) with the same ABI.
+ * library (if shared) keeping the same ABI.
  */
 typedef struct {
     /**
@@ -108,7 +107,7 @@ typedef struct {
 } mtdp_pipeline_params;
 
 /**
- * @brief Convenience union used to pad the parameters struct,
+ * @brief Convenience union used to pad the mtdp_pipeline_params struct,
  * for future implementations.
  * 
  * @details The library reserves itself 1024 bytes of data to be used for
@@ -121,7 +120,7 @@ typedef union {
 } mtdp_pipeline_parameters;
 
 /**
- * @brief Creates a multi-threaded DSP pipeline and returns a pointer to it.
+ * @brief Creates a multi-threaded data pipeline and returns a pointer to it.
  * 
  * @details This function will search for memory to allocate both the pipeline
  * and its internal structures, and it will return it after a preconfiguration
@@ -298,7 +297,7 @@ bool mtdp_pipeline_start(mtdp_pipeline *pipeline);
  * @brief Stops a pipeline.
  * 
  * @details Stopping a pipeline means putting the threads to sleep
- * and returning to the `enabled' state.
+ * and returning to the `enabled` state.
  * 
  * @note Another thread waiting on the pipeline to finish will not
  * be resumed if this function is called.

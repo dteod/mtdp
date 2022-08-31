@@ -320,7 +320,7 @@ static inline mtdp_buffer* mtdp_buffer_fifo_shift_back_left(mtdp_buffer_fifo* se
             - DT
 
         PS It was actually very bad when implemented without thinking on it. Now it looks quite comfy, it's
-        just three `if's.
+        just three `if`s.
     */
     mtdp_buffer_aggregate tmp_block;
     bool free_space_on_the_left = self->first_element_offset != 0;

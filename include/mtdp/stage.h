@@ -13,6 +13,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+/** 
+ * @file 
+ * 
+ * @brief Header containing the mtdp_stage struct, API and related utilities.
+ * 
+ * @details Avoid importing this file in user code, prefer the mtdp.h umbrella header.
+*/
+
 #ifndef MTDP_STAGE_H
 #define MTDP_STAGE_H
 
@@ -111,7 +119,7 @@ typedef struct {
 typedef void(*mtdp_stage_callback)(mtdp_stage_context*);
 
 /**
- * @brief Struct to be filled with user data.
+ * @brief Struct to be filled by the user with data describing an internal stage.
  * 
  * @details This struct is to be filled by the user with data describing
  * how the stage will process the buffers, together with some additional

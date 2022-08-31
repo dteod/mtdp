@@ -162,6 +162,8 @@ bool mtdp_pipe_init(mtdp_pipe* pipe)
 
 void mtdp_pipe_destroy(mtdp_pipe* pipe)
 {
+    mtx_destroy(&pipe->pool_mutex);
+    mtx_destroy(&pipe->fifo_mutex);
     mtdp_buffer_pool_destroy(&pipe->pool);
     mtdp_buffer_fifo_destroy(&pipe->fifo);
     mtdp_semaphore_destroy(&pipe->semaphore);

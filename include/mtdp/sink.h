@@ -13,6 +13,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+/** 
+ * @file 
+ * 
+ * @brief Header containing the mtdp_sink struct, API and related utilities.
+ * 
+ * @details Avoid importing this file in user code, prefer the mtdp.h umbrella header.
+*/
+
 #ifndef MTDP_SINK_H
 #define MTDP_SINK_H
 
@@ -82,7 +90,7 @@ typedef struct {
 typedef void(*mtdp_sink_callback)(mtdp_sink_context*);
 
 /**
- * @brief Struct to be filled with user data.
+ * @brief Struct to be filled by the user with data describing the sink stage.
  * 
  * @details This struct is to be filled by the user with data describing
  * how the sink will process the buffers, together with some additional
