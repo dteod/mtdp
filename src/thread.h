@@ -41,7 +41,7 @@ enum {
 
 #define ONCE_FLAG_INIT { 0 }
 inline void mtdp_do_nothing() {}
-#define call_once(onceflag, fun) ( (atomic_flag_test_and_set(onceflag) ? (fun) : mtdp_do_nothing)() )
+#define call_once(onceflag, fun) ( (atomic_flag_test_and_set(onceflag) ? mtdp_do_nothing : (fun))() )
 #define thrd_create(t, f, data) (*(t) = CreateThread(NULL, 0, f, data, 0, NULL), ((t) ? thrd_success : ((GetLastError() == ERROR_NOT_ENOUGH_MEMORY) ? thrd_nomem : thrd_error)))
 inline int thrd_join(thrd_t t, int* ret)
 {
