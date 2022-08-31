@@ -17,24 +17,23 @@ cmake_minimum_required(VERSION 3.0)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/TargetHardCompilation.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DefaultSetting.cmake)
-find_package(unity)
 
 project(mtdp VERSION 0.1.0)
 
-default_setting(MTDP_STATIC_THREADSAFE                      true      )
-default_setting(MTDP_STATIC_THREADSAFE_LOCKFREE             true      )
-default_setting(MTDP_PIPELINE_STATIC_INSTANCES              0         )
-default_setting(MTDP_PIPE_VECTOR_STATIC_SIZE                0         )
-default_setting(MTDP_STAGE_VECTOR_STATIC_SIZE               0         )
-default_setting(MTDP_STAGE_IMPL_VECTOR_STATIC_SIZE          0         )
-default_setting(MTDP_BUFFER_POOL_STATIC_SIZE                0         )
-default_setting(MTDP_BUFFER_FIFO_BLOCKS                     0         )
-default_setting(MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE   0         )
-default_setting(MTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES     0         )
-default_setting(MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO        0.5       )
-default_setting(MTDP_BUFFER_FIFO_BLOCK_SIZE                 16        )
-default_setting(MTDP_PIPELINE_CONSUMER_TIMEOUT_US           100000    )
-default_setting(MTDP_STRICT_ISO_C                           true     )
+default_setting(MTDP_STATIC_THREADSAFE                      true        )
+default_setting(MTDP_STATIC_THREADSAFE_LOCKFREE             true        )
+default_setting(MTDP_PIPELINE_STATIC_INSTANCES              0           )
+default_setting(MTDP_PIPE_VECTOR_STATIC_SIZE                0           )
+default_setting(MTDP_STAGE_VECTOR_STATIC_SIZE               0           )
+default_setting(MTDP_STAGE_IMPL_VECTOR_STATIC_SIZE          0           )
+default_setting(MTDP_BUFFER_POOL_STATIC_SIZE                0           )
+default_setting(MTDP_BUFFER_FIFO_BLOCKS                     0           )
+default_setting(MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE   0           )
+default_setting(MTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES     0           )
+default_setting(MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO        0.5         )
+default_setting(MTDP_BUFFER_FIFO_BLOCK_SIZE                 16          )
+default_setting(MTDP_PIPELINE_CONSUMER_TIMEOUT_US           100000      )
+default_setting(MTDP_STRICT_ISO_C                           false        )
 
 add_library(mtdp-object OBJECT
     ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/buffer.h
@@ -62,21 +61,27 @@ add_library(mtdp-object OBJECT
     ${CMAKE_CURRENT_SOURCE_DIR}/src/worker.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/worker.h
 )
-target_sources(mtdp-object PUBLIC
-    FILE_SET HEADERS
-    BASE_DIRS 
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/
-    FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/buffer.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/pipe.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/pipeline.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/sink.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/source.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/stage.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/errno.h
-)
-target_compile_features(mtdp-object PUBLIC c_std_17)
+if(${CMAKE_VERSION} GREATER_EQUAL 3.23)
+    target_sources(mtdp-object PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS 
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/
+        FILES
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/buffer.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/pipe.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/pipeline.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/sink.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/source.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/stage.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/errno.h
+    )
+endif()
+if(${CMAKE_VERSION} GREATER_EQUAL 3.21)
+    target_compile_features(mtdp-object PUBLIC c_std_17)
+elseif()
+    target_compile_features(mtdp-object PUBLIC c_std_11)
+endif()
 target_include_directories(mtdp-object
     PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>
     PUBLIC  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
@@ -147,10 +152,17 @@ write_basic_package_version_file(
     VERSION ${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}.${CMAKE_PROJECT_VERSION_PATCH}
     COMPATIBILITY SameMajorVersion
 )
-install(TARGETS mtdp mtdp-object
-    EXPORT mtdpTargets
-    FILE_SET HEADERS
-)
+if(${CMAKE_VERSION} GREATER_EQUAL 3.23)
+    install(TARGETS mtdp mtdp-object
+        EXPORT mtdpTargets
+        FILE_SET HEADERS
+    )
+else()
+    # TODO package exporting headers using older cmake
+    install(TARGETS mtdp mtdp-object
+        EXPORT mtdpTargets
+    )
+endif()
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/mtdpConfig.cmake 
     ${CMAKE_CURRENT_BINARY_DIR}/mtdpConfigVersion.cmake 
