@@ -9,7 +9,7 @@ Pipelines are used to increase the [throughput](https://en.wikipedia.org/wiki/Ne
 1. to speed up calculations performed on a fixed, finite datastream
 2. to support an infinite datastream in a [real-time process](https://en.wikipedia.org/wiki/Real-time_computing#Real-time_in_digital_signal_processing)
 
-## Compatibility and dependencies
+## Compatibility and runtime dependencies
 The library is implemented in pure C11 without dependencies except a C11 compliant runtime. It is currently supported in *NIX and Windows (not yet tested). Easy porting can be performed in environments supporting the C11 `<threads.h>` header (some efforts shall be made in porting futexes and semaphores in those cases).
 
 Targets in the development are the optimization of resources needed to handle the pipelines in both speed and memory footprint, keeping the library as small as possible. 
@@ -43,7 +43,7 @@ For additional details, consult the [documentation](https://dteod.github.io/mtdp
 While multi-threaded, a pipeline was designed to be configured and controlled by a single thread. Actively configuring a pipeline from multiple threads is not a requirement for this library: this choice was made to reduce the footprint to a bare minimum, though passively waiting for pipeline activity is supported. If your software architecture needs to configure a pipeline from multiple threads you should provide your own synchronization mechanisms.
 
 ## Build instructions
-To build the library, you will need a C11 compatible compiler and CMake. Run the following from the command line
+To build the library, you will need a C11 compatible compiler (actually C17 is configured) and CMake. Run the following from the command line
 
 ```
 mkdir -p build
@@ -64,24 +64,29 @@ after the build commands (examples will not be included in the package).
 
 ### Build configuration (experimental)
 By default, the memory allocation strategy uses `malloc`/`free` to allocate and deallocate memory. Constrained environments not relying on the heap (e.g. MISRA C complaint embedded software) may configure the following compile-time settings to switch the allocation strategy to a static global storage that keeps the `malloc`/`free` interface. It is thread safe by default, but that can be disabled if you plan to use the pipelines from a single thread.
-The following parameters may be additional set while configuring with CMake:  
+The following parameters affect the memory allocation strategy, to be set when configuring with CMake:
 
 |Parameter|Default Value|Description
 |-----|----|----|
-|`MTDP_STATIC_THREADSAFE`                       | true    |    |
-|`MTDP_STATIC_THREADSAFE_LOCKFREE`              | true    |    |
-|`MTDP_PIPELINE_STATIC_INSTANCES`               | 0       |    |
-|`MTDP_PIPE_VECTOR_STATIC_SIZE`                 | 0       |    |
-|`MTDP_STAGE_VECTOR_STATIC_SIZE`                | 0       |    |
-|`MTDP_STAGE_IMPL_VECTOR_STATIC_SIZE`           | 0       |    |
-|`MTDP_BUFFER_POOL_STATIC_SIZE`                 | 0       |    |
-|`MTDP_BUFFER_FIFO_BLOCKS`                      | 0       |    |
-|`MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE`    | 0       |    |
-|`MTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES`      | 0       |    |
-|`MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO`         | 0.5     |    |
-|`MTDP_BUFFER_FIFO_BLOCK_SIZE`                  | 16      |    |
-|`MTDP_PIPELINE_CONSUMER_TIMEOUT_US`            | 100000  |    |
-|`MTDP_STRICT_ISO_C`                            | false    |    |
+|`MTDP_STATIC_THREADSAFE`                       | true    | When performing static allocation strategy, perform it thread-safely. |
+|`MTDP_STATIC_THREADSAFE_LOCKFREE`              | true    | When performing thread-safe static allocation strategy, perform it in a lock-free manner. |
+|`MTDP_PIPELINE_STATIC_INSTANCES`               | 0       | Number of pipeline instances to store in static global memory. When not zero, disables dynamic allocation strategy for `mtdp_pipeline` instances. |
+|`MTDP_PIPE_VECTOR_STATIC_SIZE`                 | 0       | When not zero, embeds a static array of fixed size in the pipeline for the pipes. |
+|`MTDP_STAGE_VECTOR_STATIC_SIZE`                | 0       | When not zero, embeds a static array of fixed size in the pipeline for the stages. |
+|`MTDP_STAGE_IMPL_VECTOR_STATIC_SIZE`           | 0       | When not zero, embeds a static array of fixed size in the pipeline for the stage implementations. |
+|`MTDP_BUFFER_POOL_STATIC_SIZE`                 | 0       | When not zero, embeds a static array of fixed size in the pipes for the buffers. Attempts to resize a buffer pool to a number bigger that this (when not zero) will fail.
+|`MTDP_BUFFER_FIFO_BLOCKS`                      | 0       | When not zero, embeds a fixed number of FIFO blocks in the pipe's buffer FIFO. |
+|`MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE`    | 0       |  |
+|`MTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES`      | 0       | Number of buffer fifo blocks to store in static global memory. When not zero, enables static global allocation strategy for `mtdp_buffer_fifo_block` instances. |
+|`MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO`         | 0.5     | Ratio under which a buffer shift is performed when at the edge of a FIFO block; above this value more memory is requested from the FIFO. |
+
+Also these parameters may be configured miscellaneously.
+
+|Parameter|Default Value|Description
+|-----|----|----|
+|`MTDP_BUFFER_FIFO_BLOCK_SIZE`                  | 16      | Number of buffers entering in a FIFO block. |
+|`MTDP_PIPELINE_CONSUMER_TIMEOUT_US`            | 100000  | Miximum input waiting time after which the stages will notify inactivity. |
+|`MTDP_STRICT_ISO_C`                            | false   | Only useful when compiling with gcc or clang, uses an inline function instead of an expression statement. |
 
 ## Known bugs
 None at the moment, but if any are found please feel free to open an issue. Code quality tools TBI.
