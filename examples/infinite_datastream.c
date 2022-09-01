@@ -16,17 +16,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <time.h>
-#include <sys/time.h>
+#if defined(_WIN32)
+#   include <windows.h>
+#   define nop() __nop()
+#else
+#   include <time.h>
+#   include <sys/time.h>
+#   define nop() do {asm volatile("nop");} while(0)
+#endif
 
 #include <mtdp.h>
 
 size_t timestamp_from(void* old)
 {
+#if defined(_WIN32)
+    static bool init = false;
+    static ULONGLONG programStart = 0;
+    FILETIME filetime;
+    ULARGE_INTEGER largeInteger;
+
+    GetSystemTimePreciseAsFileTime(&filetime);
+    largeInteger.LowPart = filetime.dwLowDateTime;
+    largeInteger.HighPart = filetime.dwHighDateTime;
+
+    if (!init) {
+        programStart = largeInteger.QuadPart;
+        largeInteger.QuadPart = 0;
+        init = true;
+    }
+    else {
+        largeInteger.QuadPart -= programStart;
+    }
+    return (unsigned long)largeInteger.QuadPart / 10 + (largeInteger.QuadPart % 10 > 5) - (old ? *(size_t*)old : 0UL);
+#else
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    return (tv.tv_sec%86400)*1e6 + tv.tv_usec%1000000 - (old ? *(size_t*) old : 0UL);
+    return (tv.tv_sec % 86400) * 1e6 + tv.tv_usec % 1000000 - (old ? *(size_t*)old : 0UL);
+#endif
 }
+
 
 typedef struct {
     size_t timestamp;
@@ -35,16 +63,16 @@ typedef struct {
 
 void long_task()
 {
-    unsigned long clock_cycles = 1e9;
+    unsigned long clock_cycles = (unsigned long) 1e9;
     do {
-        asm volatile ( "nop" );
+        nop();
     } while(clock_cycles--);
 }
 
 void source_payload(mtdp_source_context* ctx)
 {
     payload_data* data = (payload_data*) ctx->self;
-    printf("%10lu - [%10.6f] source(%lu)\n", data->iteration_index++,
+    printf("%10zu - [%10.6f] source(%zu)\n", data->iteration_index++,
         timestamp_from(&data->timestamp)/1e6, *(size_t*) ctx->output);
     long_task();
     ctx->ready_to_push = true;
@@ -53,7 +81,7 @@ void source_payload(mtdp_source_context* ctx)
 void stage_payload(mtdp_stage_context* ctx)
 {
     payload_data* data = (payload_data*) ctx->self;
-    printf("%10lu - [%10.6f] stage(%lu, %lu)\n", data->iteration_index++, 
+    printf("%10zu - [%10.6f] stage(%zu, %zu)\n", data->iteration_index++, 
         timestamp_from(&data->timestamp)/1e6, *(size_t*) ctx->input, *(size_t*) ctx->output);
     long_task();
     ctx->ready_to_pull = ctx->ready_to_push = true;
@@ -62,7 +90,7 @@ void stage_payload(mtdp_stage_context* ctx)
 void sink_payload(mtdp_sink_context* ctx)
 {
     payload_data* data = (payload_data*) ctx->self;
-    printf("%10lu - [%10.6f] sink(%lu)\n", data->iteration_index++, 
+    printf("%10zu - [%10.6f] sink(%zu)\n", data->iteration_index++, 
         timestamp_from(&data->timestamp)/1e6, *(size_t*) ctx->input);
     long_task();
     ctx->ready_to_pull = true;
@@ -111,17 +139,17 @@ int main()
     pipe = mtdp_pipeline_get_pipes(pipeline);
     for(size_t p = 0; p != 1 + N_STAGES; p++, pipe = mtdp_pipe_next(pipe)) {
         if(!mtdp_pipe_resize(pipe, N_BUFFERS)) {
-            fprintf(stderr, "failed to allocate buffers for pipe %lu\n", p);
+            fprintf(stderr, "failed to allocate buffers for pipe %zu\n", p);
             exit(-1);
         }
         buffers = mtdp_pipe_buffers(pipe);
         for(size_t i = 0; i != N_BUFFERS; ++i) {
             buffers[i] = malloc(1024); /* Buffer creation */
             if(!buffers[i]) {
-                fprintf(stderr, "failed to allocate buffer %lu on pipe %lu\n", i, p);
+                fprintf(stderr, "failed to allocate buffer %zu on pipe %zu\n", i, p);
                 exit(-1);
             }
-            printf("allocated buffer[%lu] at %p\n", i, buffers[i]);
+            printf("allocated buffer[%zu] at %p\n", i, buffers[i]);
             ((size_t*) buffers[i])[0] = N_BUFFERS - i;
         }
     }
@@ -149,11 +177,14 @@ int main()
         const size_t NSECONDS = 10;
         /* 5. Start the threads. Asynchronously wait while they operate. */
         mtdp_pipeline_start(pipeline);
-
+#if defined(_WIN32)
+        Sleep((DWORD) (NSECONDS * 1000));
+#elif defined(__unix__)
         struct timespec ts;
         ts.tv_sec = NSECONDS;
         ts.tv_nsec = 0;
         nanosleep(&ts, NULL);
+#endif
 
         /* 6. Stop the threads. */
         mtdp_pipeline_stop(pipeline);
@@ -162,22 +193,25 @@ int main()
         c = 0;
         while(!(c == 'r' || c == 'x' || c == 'q' || c == 'd')) {
             printf("insert a key:\n"
-                "\tr to resume execution for another %lu seconds\n"
+                "\tr to resume execution for another %zu seconds\n"
                 "\tx to resume execution, wait 1 second, then destroy the pipeline\n"
                 "\td to destroy the pipeline\n"
                 "\tq to destroy the pipeline and quit\n"
             , NSECONDS);
-            while((c = getchar()) == '\n') {}
+            while((c = (char) getchar()) == '\n') {}
         }
     } while(!(c == 'x' || c == 'q' || c == 'd'));
 
     if(c == 'x') {
         mtdp_pipeline_start(pipeline);
-
+#if defined(_WIN32)
+        Sleep(1000);
+#elif defined(__unix__)
         struct timespec ts;
         ts.tv_sec = 1;
         ts.tv_nsec = 0;
         nanosleep(&ts, NULL);
+#endif
     }
     
     /* 7. Destroy the threads and clear the pipes.
@@ -191,7 +225,7 @@ int main()
     for(size_t p = 0; p != 1 + N_STAGES; ++p, pipe = mtdp_pipe_next(pipe)) {
         buffers = mtdp_pipe_buffers(pipe);
         for(size_t i = 0; i != N_BUFFERS; ++i) {
-            printf("deleting buffer[%lu] at %p\n", i, buffers[i]);
+            printf("deleting buffer[%zu] at %p\n", i, buffers[i]);
             free(buffers[i]); /* Buffer destruction */
         }
     }

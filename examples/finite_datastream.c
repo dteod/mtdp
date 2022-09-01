@@ -16,17 +16,68 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <time.h>
-#include <sys/time.h>
-#include <threads.h>
+#if defined(_WIN32)
+#   include <windows.h>
+enum {
+  thrd_success,
+  thrd_busy,
+  thrd_error,
+  thrd_nomem,
+  thrd_timedout
+};
+#   define thrd_t HANDLE
+#   define thrd_create(t, f, data) (*(t) = CreateThread(NULL, 0, f, data, 0, NULL), ((t) ? thrd_success : ((GetLastError() == ERROR_NOT_ENOUGH_MEMORY) ? thrd_nomem : thrd_error)))
+inline int thrd_join(thrd_t t, int* ret)
+{
+    int out = thrd_success;
+    WaitForSingleObject(t, INFINITE);
+    if(GetLastError() != ERROR_SUCCESS) {
+        out = thrd_error;
+    }
+    if(ret) {
+        DWORD uret;
+        GetExitCodeThread(t, &uret);
+        *ret = (int)uret;
+        if(GetLastError() != ERROR_SUCCESS) {
+            out = thrd_error;
+        }
+    }
+    return out;
+}
+#else
+#   include <time.h>
+#   include <sys/time.h>
+#   include <threads.h>
+#endif
 
 #include <mtdp.h>
 
 size_t timestamp_from(void* old)
 {
+#if defined(_WIN32)
+    static bool init = false;
+    static ULONGLONG programStart = 0;
+    FILETIME filetime;
+    ULARGE_INTEGER largeInteger;
+
+    GetSystemTimePreciseAsFileTime(&filetime);
+    largeInteger.LowPart = filetime.dwLowDateTime;
+    largeInteger.HighPart = filetime.dwHighDateTime;
+
+    if (!init) {
+        programStart = largeInteger.QuadPart;
+        largeInteger.QuadPart = 0;
+        init = true;
+    }
+    else {
+        largeInteger.QuadPart -= programStart;
+    }
+    return (unsigned long) largeInteger.QuadPart/10 + (largeInteger.QuadPart%10 > 5) - (old ? *(size_t*) old : 0UL);
+#else
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return (tv.tv_sec%86400)*1e6 + tv.tv_usec%1000000 - (old ? *(size_t*) old : 0UL);
+#endif
 }
 
 typedef struct {
@@ -183,10 +234,15 @@ int main()
     printf("threads waiting for pipeline to finish, stopping for 5 seconds after 2 seconds\n");
 
     /* 6. Playing a bit with timings. You can tweak with this example to see how it behaves. */
+    const uint SECONDS_TO_SLEEP = 2;
+#if defined(_WIN32)
+    Sleep(SECONDS_TO_SLEEP*1000);
+#elif defined(__unix__)
     struct timespec ts;
-    ts.tv_sec = 2;
+    ts.tv_sec = SECONDS_TO_SLEEP;
     ts.tv_nsec = 0;
     nanosleep(&ts, NULL);
+#endif
     mtdp_pipeline_stop(pipeline);
     printf("pipeline stopped\n");
 

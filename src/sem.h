@@ -78,7 +78,7 @@ typedef sem_t mtdp_semaphore;
         }
 #   endif
 #elif defined(_WIN32)
-#   define mtdp_semaphore_init(p_sem)               (*(p_sem) = CreateSemaphoreA(NULL, 0, INFINITE, NULL))
+#   define mtdp_semaphore_init(p_sem)               (*(p_sem) = CreateSemaphoreA(NULL, 0, INT32_MAX, NULL))
 #   define mtdp_semaphore_destroy(p_sem)            CloseHandle(*(p_sem))
 #   define mtdp_semaphore_release(p_sem, update)    ReleaseSemaphore(*(p_sem), update, NULL)
 #   define mtdp_semaphore_acquire(p_sem)            WaitForSingleObject(*(p_sem), INFINITE)
