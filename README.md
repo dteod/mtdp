@@ -59,7 +59,7 @@ cpack
 after the build commands (examples will not be included in the package).
 
 ### Build configuration (experimental)
-By default, the memory allocation strategy uses `malloc`/`free` to allocate and deallocate memory. Constrained environments not relying on the heap (e.g. MISRA C complaint embedded software) may configure the following compile-time settings to switch the allocation strategy to a static global storage that keeps the `malloc`/`free` interface. It is thread safe by default, but that can be disabled if you plan to use the pipelines from a single thread.
+By default, the memory allocation strategy uses `malloc`/`free` to allocate and deallocate memory. Constrained environments not relying on the heap (e.g. MISRA C compliant embedded software) may configure the following compile-time settings to switch the allocation strategy to a static global storage that keeps the `malloc`/`free` interface. It is thread safe by default, but that can be disabled if you plan to use the pipelines from a single thread.
 The following parameters affect the memory allocation strategy, to be set when configuring with CMake:
 
 |Parameter|Default Value|Description|
