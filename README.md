@@ -60,29 +60,29 @@ after the build commands (examples will not be included in the package).
 
 ### Build configuration (experimental)
 By default, the memory allocation strategy uses `malloc`/`free` to allocate and deallocate memory. Constrained environments not relying on the heap (e.g. MISRA C compliant embedded software) may configure the following compile-time settings to switch the allocation strategy to a static global storage that keeps the `malloc`/`free` interface. It is thread safe by default, but that can be disabled if you plan to use the pipelines from a single thread.
-The following parameters affect the memory allocation strategy, to be set when configuring with CMake:
+The following parameters affect the memory allocation strategy, to be set when configuring with CMake (use `cmake <source-dir> -D<parameter>=<value>`):
 
 |Parameter|Default Value|Description|
 |-----|----|----|
-|`MTDP_STATIC_THREADSAFE`                       | true    | When performing static allocation strategy, perform it thread-safely. |
-|`MTDP_STATIC_THREADSAFE_LOCKFREE`              | true    | When performing thread-safe static allocation strategy, perform it in a lock-free manner. |
-|`MTDP_PIPELINE_STATIC_INSTANCES`               | 0       | Number of pipeline instances to store in static global memory. When not zero, disables dynamic allocation strategy for `mtdp_pipeline` instances. |
-|`MTDP_PIPE_VECTOR_STATIC_SIZE`                 | 0       | When not zero, embeds a static array of fixed size in the pipeline for the pipes. |
-|`MTDP_STAGE_VECTOR_STATIC_SIZE`                | 0       | When not zero, embeds a static array of fixed size in the pipeline for the stages. |
-|`MTDP_STAGE_IMPL_VECTOR_STATIC_SIZE`           | 0       | When not zero, embeds a static array of fixed size in the pipeline for the stage implementations. |
-|`MTDP_BUFFER_POOL_STATIC_SIZE`                 | 0       | When not zero, embeds a static array of fixed size in the pipes for the buffers. Attempts to resize a buffer pool to a number bigger that this (when not zero) will fail.
-|`MTDP_BUFFER_FIFO_BLOCKS`                      | 0       | When not zero, embeds a fixed number of FIFO blocks in the pipe's buffer FIFO. |
-|`MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE`    | 0       | When not zero, embeds a static array of fixed size in the pipe's buffer FIFO for keeping track of the blocks. |
-|`MTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES`      | 0       | Number of buffer fifo blocks to store in static global memory. When not zero, enables static global allocation strategy for `mtdp_buffer_fifo_block` instances. |
+|`MTDP_STATIC_THREADSAFE`|true|When performing static allocation strategy, perform it thread-safely.|
+|`MTDP_STATIC_THREADSAFE_LOCKFREE`|true|When performing thread-safe static allocation strategy, perform it in a lock-free manner.|
+|`MTDP_PIPELINE_STATIC_INSTANCES`|0|Number of pipeline instances to store in static global memory. When not zero, disables dynamic allocation strategy for `mtdp_pipeline` instances.|
+|`MTDP_PIPE_VECTOR_STATIC_SIZE`|0|When not zero, embeds a static array of fixed size in the pipeline for the pipes.|
+|`MTDP_STAGE_VECTOR_STATIC_SIZE`|0| When not zero, embeds a static array of fixed size in the pipeline for the stages. |
+|`MTDP_STAGE_IMPL_VECTOR_STATIC_SIZE`|0|When not zero, embeds a static array of fixed size in the pipeline for the stage implementations.|
+|`MTDP_BUFFER_POOL_STATIC_SIZE`|0| When not zero, embeds a static array of fixed size in the pipes for the buffers. Attempts to resize a buffer pool to a number bigger that this (when not zero) will fail.|
+|`MTDP_BUFFER_FIFO_BLOCKS`|0|When not zero, embeds a fixed number of FIFO blocks in the pipe's buffer FIFO.|
+|`MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE`|0|When not zero, embeds a static array of fixed size in the pipe's buffer FIFO for keeping track of the blocks.|
+|`MTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES`|0|Number of buffer fifo blocks to store in static global memory. When not zero, enables static global allocation strategy for `mtdp_buffer_fifo_block` instances.|
 
 Also these parameters may be configured miscellaneously.
 
 |Parameter|Default Value|Description
 |-----|----|----|
-|`MTDP_BUFFER_FIFO_BLOCK_SIZE`                  | 16      | Number of buffers entering in a FIFO block. |
-|`MTDP_PIPELINE_CONSUMER_TIMEOUT_US`            | 100000  | Miximum input waiting time after which the stages will notify inactivity. |
-|`MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO`         | 0.5     | Ratio under which a buffer shift is performed when at the edge of a FIFO block; above this value more memory is requested from the FIFO. |
-|`MTDP_STRICT_ISO_C`                            | false   | Only useful when compiling with gcc or clang, uses an inline function instead of an expression statement. |
+|`MTDP_BUFFER_FIFO_BLOCK_SIZE`|16|Number of buffers entering in a FIFO block.|
+|`MTDP_PIPELINE_CONSUMER_TIMEOUT_US`|100000|Miximum input waiting time after which the stages will notify inactivity.|
+|`MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO`|0.5| Ratio under which a buffer shift is performed when at the edge of a FIFO block; above this value more memory is requested from the FIFO.|
+|`MTDP_STRICT_ISO_C`|false| Only useful when compiling with gcc or clang, uses an inline function instead of an expression statement.|
 
 ## Known bugs
 None at the moment, but if any are found please feel free to open an issue.
