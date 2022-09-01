@@ -113,9 +113,15 @@ elseif(WIN32)
     target_link_libraries(mtdp-object PUBLIC synchronization.lib)
 endif()
 target_hard_compilation(mtdp-object PUBLIC)
+set_target_properties(mtdp-object PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-add_library(mtdp)
-target_link_libraries(mtdp PRIVATE mtdp-object)
+add_library(static STATIC)
+target_link_libraries(static PRIVATE mtdp-object)
+set_target_properties(static PROPERTIES OUTPUT_NAME mtdp)
+
+add_library(shared SHARED)
+target_link_libraries(shared PRIVATE mtdp-object)
+set_target_properties(shared PROPERTIES OUTPUT_NAME mtdp VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_VERSION})
 
 find_package(Doxygen QUIET)
 if(DOXYGEN_FOUND)
@@ -129,6 +135,7 @@ else()
 endif()
 
 find_package(unity QUIET)
+# unity can be found here https://github.com/ThrowTheSwitch/Unity
 if(unity_FOUND)
     add_executable(mtdp_fifo_test ${CMAKE_CURRENT_SOURCE_DIR}/test/fifo.c)
     target_include_directories(mtdp_fifo_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/)
@@ -157,12 +164,12 @@ write_basic_package_version_file(
     COMPATIBILITY SameMajorVersion
 )
 if(${CMAKE_VERSION} GREATER_EQUAL 3.23)
-    install(TARGETS mtdp mtdp-object
+    install(TARGETS mtdp-object static shared
         EXPORT mtdpTargets
         FILE_SET HEADERS
     )
 else()
-    install(TARGETS mtdp mtdp-object
+    install(TARGETS mtdp-object static shared
         EXPORT mtdpTargets
     )
 endif()
@@ -177,5 +184,6 @@ install(EXPORT mtdpTargets
 )
 install(FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
+    ${CMAKE_CURRENT_SOURCE_DIR}/COPYING.LESSER
     DESTINATION share
 )
