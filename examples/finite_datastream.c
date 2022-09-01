@@ -51,7 +51,7 @@ inline int thrd_join(thrd_t t, int* ret)
 #   include <time.h>
 #   include <sys/time.h>
 #   include <threads.h>
-#   define nop() do {asm volatile("nop")} while(0)
+#   define nop() do {asm volatile("nop");} while(0)
 #endif
 
 #include <mtdp.h>

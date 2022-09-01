@@ -51,7 +51,6 @@ add_library(mtdp-object OBJECT
     ${CMAKE_CURRENT_SOURCE_DIR}/src/memory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pipe.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pipeline.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sink.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/source.c
