@@ -18,36 +18,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #if defined(_WIN32)
 #   include <windows.h>
+#   include <processthreadsapi.h>
 enum {
-  thrd_success,
-  thrd_busy,
-  thrd_error,
-  thrd_nomem,
-  thrd_timedout
+    thrd_success,
+    thrd_busy,
+    thrd_error,
+    thrd_nomem,
+    thrd_timedout
 };
 #   define thrd_t HANDLE
+#   define thrd_current() GetCurrentThread()
 #   define thrd_create(t, f, data) (*(t) = CreateThread(NULL, 0, f, data, 0, NULL), ((t) ? thrd_success : ((GetLastError() == ERROR_NOT_ENOUGH_MEMORY) ? thrd_nomem : thrd_error)))
 inline int thrd_join(thrd_t t, int* ret)
 {
     int out = thrd_success;
     WaitForSingleObject(t, INFINITE);
-    if(GetLastError() != ERROR_SUCCESS) {
+    if (GetLastError() != ERROR_SUCCESS) {
         out = thrd_error;
     }
-    if(ret) {
+    if (ret) {
         DWORD uret;
         GetExitCodeThread(t, &uret);
         *ret = (int)uret;
-        if(GetLastError() != ERROR_SUCCESS) {
+        if (GetLastError() != ERROR_SUCCESS) {
             out = thrd_error;
         }
     }
     return out;
 }
+#   define nop() __nop()
 #else
 #   include <time.h>
 #   include <sys/time.h>
 #   include <threads.h>
+#   define nop() do {asm volatile("nop")} while(0)
 #endif
 
 #include <mtdp.h>
@@ -72,11 +76,11 @@ size_t timestamp_from(void* old)
     else {
         largeInteger.QuadPart -= programStart;
     }
-    return (unsigned long) largeInteger.QuadPart/10 + (largeInteger.QuadPart%10 > 5) - (old ? *(size_t*) old : 0UL);
+    return (unsigned long)largeInteger.QuadPart / 10 + (largeInteger.QuadPart % 10 > 5) - (old ? *(size_t*)old : 0UL);
 #else
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    return (tv.tv_sec%86400)*1e6 + tv.tv_usec%1000000 - (old ? *(size_t*) old : 0UL);
+    return (tv.tv_sec % 86400) * 1e6 + tv.tv_usec % 1000000 - (old ? *(size_t*)old : 0UL);
 #endif
 }
 
@@ -87,23 +91,23 @@ typedef struct {
 
 void long_task()
 {
-    unsigned long clock_cycles = 1e9;
+    unsigned long clock_cycles = (unsigned long) 1e9;
     do {
-        asm volatile ( "nop" );
-    } while(clock_cycles--);
+        nop();
+    } while (clock_cycles--);
 }
 
 void source_payload(mtdp_source_context* ctx)
 {
-    payload_data* data = (payload_data*) ctx->self;
-    printf("%10lu - [%10.6f] source(%lu)\n", data->iteration_index++,
-        timestamp_from(&data->timestamp)/1e6, *(size_t*) ctx->output);
+    payload_data* data = (payload_data*)ctx->self;
+    printf("%10zu - [%10.6f] source(%zu)\n", data->iteration_index++,
+        timestamp_from(&data->timestamp) / 1e6, *(size_t*)ctx->output);
     long_task();
 
-    if(timestamp_from(&data->timestamp)/1e6 > 5) {
+    if (timestamp_from(&data->timestamp) / 1e6 > 5) {
         /*
-            Here the source stage will notify that it finished. 
-            It will be destroyed at the very next iteration, 
+            Here the source stage will notify that it finished.
+            It will be destroyed at the very next iteration,
             while the next stages will notify their inactivity
             when they will finish process the incoming buffers.
 
@@ -120,28 +124,32 @@ void source_payload(mtdp_source_context* ctx)
 
 void stage_payload(mtdp_stage_context* ctx)
 {
-    payload_data* data = (payload_data*) ctx->self;
-    printf("%10lu - [%10.6f] stage(%lu, %lu)\n", data->iteration_index++, 
-        timestamp_from(&data->timestamp)/1e6, *(size_t*) ctx->input, *(size_t*) ctx->output);
+    payload_data* data = (payload_data*)ctx->self;
+    printf("%10zu - [%10.6f] stage(%zu, %zu)\n", data->iteration_index++,
+        timestamp_from(&data->timestamp) / 1e6, *(size_t*)ctx->input, *(size_t*)ctx->output);
     long_task();
     ctx->ready_to_pull = ctx->ready_to_push = true;
 }
 
 void sink_payload(mtdp_sink_context* ctx)
 {
-    payload_data* data = (payload_data*) ctx->self;
-    printf("%10lu - [%10.6f] sink(%lu)\n", data->iteration_index++, 
-        timestamp_from(&data->timestamp)/1e6, *(size_t*) ctx->input);
+    payload_data* data = (payload_data*)ctx->self;
+    printf("%10zu - [%10.6f] sink(%zu)\n", data->iteration_index++,
+        timestamp_from(&data->timestamp) / 1e6, *(size_t*)ctx->input);
     long_task();
     ctx->ready_to_pull = true;
 }
 
+#if defined(_WIN32)
+DWORD wait_on(void* data)
+#elif defined(__unix__)
 int wait_on(void* data)
+#endif
 {
-    printf("%lu: started\n", thrd_current());
-    mtdp_pipeline* pipeline = (mtdp_pipeline*) data;
+    printf("%zu: started\n", (size_t) thrd_current());
+    mtdp_pipeline* pipeline = (mtdp_pipeline*)data;
     mtdp_pipeline_wait(pipeline);
-    printf("%lu: exiting\n", thrd_current());
+    printf("%zu: exiting\n", (size_t) thrd_current());
     return 0;
 }
 
@@ -149,18 +157,18 @@ int main()
 {
     const size_t N_STAGES = 1;
     const size_t N_BUFFERS = 32;
-    register mtdp_pipeline *pipeline;
-             mtdp_source   *source;
-             mtdp_stage    *stages;
-             mtdp_sink     *sink;
-             mtdp_pipe     *pipe;
-             mtdp_buffer   *buffers;
+    register mtdp_pipeline* pipeline;
+    mtdp_source* source;
+    mtdp_stage* stages;
+    mtdp_sink* sink;
+    mtdp_pipe* pipe;
+    mtdp_buffer* buffers;
 
     /* 0. Retrieve memory for a pipeline and preconfigure it */
     mtdp_pipeline_parameters parameters;
     parameters.params.internal_stages = N_STAGES;
     pipeline = mtdp_pipeline_create(&parameters);
-    if(!pipeline) {
+    if (!pipeline) {
         fprintf(stderr, "failed to create pipeline\n");
         exit(-1);
     }
@@ -185,38 +193,38 @@ int main()
           These can be simple byte-level `malloc`s
           up to complex C++ classes created with `new`. */
     pipe = mtdp_pipeline_get_pipes(pipeline);
-    for(size_t p = 0; p != 1 + N_STAGES; p++, pipe = mtdp_pipe_next(pipe)) {
-        if(!mtdp_pipe_resize(pipe, N_BUFFERS)) {
-            fprintf(stderr, "failed to allocate buffers for pipe %lu\n", p);
+    for (size_t p = 0; p != 1 + N_STAGES; p++, pipe = mtdp_pipe_next(pipe)) {
+        if (!mtdp_pipe_resize(pipe, N_BUFFERS)) {
+            fprintf(stderr, "failed to allocate buffers for pipe %zu\n", p);
             exit(-1);
         }
         buffers = mtdp_pipe_buffers(pipe);
-        for(size_t i = 0; i != N_BUFFERS; ++i) {
+        for (size_t i = 0; i != N_BUFFERS; ++i) {
             buffers[i] = malloc(1024); /* Buffer creation */
-            if(!buffers[i]) {
-                fprintf(stderr, "failed to allocate buffer %lu on pipe %lu\n", i, p);
+            if (!buffers[i]) {
+                fprintf(stderr, "failed to allocate buffer %zu on pipe %zu\n", i, p);
                 exit(-1);
             }
-            printf("allocated buffer[%lu] at %p\n", i, buffers[i]);
-            ((size_t*) buffers[i])[0] = N_BUFFERS - i;
+            printf("allocated buffer[%zu] at %p\n", i, buffers[i]);
+            ((size_t*)buffers[i])[0] = N_BUFFERS - i;
         }
     }
 
-    /* 3. Fill the stages' data. Even here, data can be anything, 
+    /* 3. Fill the stages' data. Even here, data can be anything,
           from a stack allocated plain struct to
           a huge C++ god class allocated on the heap. */
     payload_data source_data, stage_data, sink_data;
     source_data.timestamp =
-    stage_data.timestamp  =
-    sink_data.timestamp   =
+        stage_data.timestamp =
+        sink_data.timestamp =
         timestamp_from(NULL);
-    source_data.iteration_index = 
-    stage_data.iteration_index  = 
-    sink_data.iteration_index   = 
+    source_data.iteration_index =
+        stage_data.iteration_index =
+        sink_data.iteration_index =
         0;
-    source->self    = &source_data;
-    stages[0].self  = &stage_data;
-    sink->self      = &sink_data;
+    source->self = &source_data;
+    stages[0].self = &stage_data;
+    sink->self = &sink_data;
 
     /* 4. Enable the pipeline to create the threads (but do not start them yet). */
     mtdp_pipeline_enable(pipeline);
@@ -230,25 +238,30 @@ int main()
     thrd_create(&t1, wait_on, pipeline);
     thrd_create(&t2, wait_on, pipeline);
     thrd_create(&t3, wait_on, pipeline);
-    
+
     printf("threads waiting for pipeline to finish, stopping for 5 seconds after 2 seconds\n");
 
     /* 6. Playing a bit with timings. You can tweak with this example to see how it behaves. */
-    const uint SECONDS_TO_SLEEP = 2;
+    unsigned int seconds_to_sleep = 2;
 #if defined(_WIN32)
-    Sleep(SECONDS_TO_SLEEP*1000);
+    Sleep(seconds_to_sleep * 1000);
 #elif defined(__unix__)
     struct timespec ts;
-    ts.tv_sec = SECONDS_TO_SLEEP;
+    ts.tv_sec = seconds_to_sleep;
     ts.tv_nsec = 0;
     nanosleep(&ts, NULL);
 #endif
     mtdp_pipeline_stop(pipeline);
     printf("pipeline stopped\n");
 
-    ts.tv_sec = 5;
+    seconds_to_sleep = 5;
+#if defined(_WIN32)
+    Sleep(seconds_to_sleep * 1000);
+#elif defined(__unix__)
+    ts.tv_sec = seconds_to_sleep;
     ts.tv_nsec = 0;
     nanosleep(&ts, NULL);
+#endif
     printf("%s",
         "activating the pipeline again -> the source stage will detect\n"
         "that 5 seconds are passed since the beginning and it will notify\n"
@@ -272,10 +285,10 @@ int main()
 
     /* 8. Remember to deallocate the user buffers. */
     pipe = mtdp_pipeline_get_pipes(pipeline);
-    for(size_t p = 0; p != 1 + N_STAGES; ++p, pipe = mtdp_pipe_next(pipe)) {
+    for (size_t p = 0; p != 1 + N_STAGES; ++p, pipe = mtdp_pipe_next(pipe)) {
         buffers = mtdp_pipe_buffers(pipe);
-        for(size_t i = 0; i != N_BUFFERS; ++i) {
-            printf("deleting buffer[%lu] at %p\n", i, buffers[i]);
+        for (size_t i = 0; i != N_BUFFERS; ++i) {
+            printf("deleting buffer[%zu] at %p\n", i, buffers[i]);
             free(buffers[i]); /* Buffer destruction */
         }
     }

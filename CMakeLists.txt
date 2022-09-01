@@ -110,6 +110,8 @@ target_compile_definitions(mtdp-object PUBLIC
 )
 if(UNIX)
     target_link_libraries(mtdp-object PUBLIC m atomic pthread)
+elseif(WIN32)
+    target_link_libraries(mtdp-object PUBLIC synchronization.lib)
 endif()
 target_hard_compilation(mtdp-object PUBLIC)
 
@@ -134,13 +136,11 @@ if(unity_FOUND)
     target_link_libraries(mtdp_fifo_test PRIVATE mtdp-object unity::framework)
 endif()
 
-if(UNIX)
-    add_executable(mtdp_infinite_datastream_example ${CMAKE_CURRENT_SOURCE_DIR}/examples/infinite_datastream.c)
-    target_link_libraries(mtdp_infinite_datastream_example PRIVATE mtdp-object)
+add_executable(mtdp_infinite_datastream_example ${CMAKE_CURRENT_SOURCE_DIR}/examples/infinite_datastream.c)
+target_link_libraries(mtdp_infinite_datastream_example PRIVATE mtdp-object)
 
-    add_executable(mtdp_finite_datastream_example ${CMAKE_CURRENT_SOURCE_DIR}/examples/finite_datastream.c)
-    target_link_libraries(mtdp_finite_datastream_example PRIVATE mtdp-object)
-endif()
+add_executable(mtdp_finite_datastream_example ${CMAKE_CURRENT_SOURCE_DIR}/examples/finite_datastream.c)
+target_link_libraries(mtdp_finite_datastream_example PRIVATE mtdp-object)
 
 set(CPACK_GENERATOR "TZST")
 include(CPack)
@@ -163,7 +163,6 @@ if(${CMAKE_VERSION} GREATER_EQUAL 3.23)
         FILE_SET HEADERS
     )
 else()
-    # TODO package exporting headers using older cmake
     install(TARGETS mtdp mtdp-object
         EXPORT mtdpTargets
     )
