@@ -17,13 +17,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
  * @file 
  * 
  * @brief Header containing error codes exposed to the user.
-*/
+ * @note Do not import this file in user code, use the mtdp.h umbrella header instead.
+ */
 
 #ifndef MTDP_ERRNO_H
 #define MTDP_ERRNO_H
 
-#ifdef __cplusplus
-extern "C" {
+#ifndef MTDP_H
+#   error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
 #endif
 
 /**
@@ -76,9 +77,5 @@ const enum mtdp_error* mtdp_errno_ptr();
  * @note The retrieved value is thread local.
  */
 #define mtdp_errno (*mtdp_errno_ptr())
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

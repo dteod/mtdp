@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string.h>
 #include <math.h>
 
-#include "mtdp/stage.h"
+#include "mtdp.h"
 #include "impl/stage.h"
 #include "impl/pipe.h"
 #include "futex.h"

@@ -17,12 +17,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
  * @file 
  * 
  * @brief Header containing the mtdp_buffer alias.
- * 
- * @details Avoid importing this file in user code, prefer the mtdp.h umbrella header.
-*/
+ * @note Do not import this file in user code, use the mtdp.h umbrella header instead.
+ */
 
 #ifndef MTDP_BUFFER_H
 #define MTDP_BUFFER_H
+
+#ifndef MTDP_H
+#   error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
+#endif
 
 /**
  * @brief Convenience alias used to abstract pointer syntax.

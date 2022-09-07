@@ -17,21 +17,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
  * @file 
  * 
  * @brief Header containing the mtdp_sink struct, API and related utilities.
- * 
- * @details Avoid importing this file in user code, prefer the mtdp.h umbrella header.
-*/
+ * @note Do not import this file in user code, use the mtdp.h umbrella header instead.
+ */
 
 #ifndef MTDP_SINK_H
 #define MTDP_SINK_H
 
-#ifdef __cplusplus
-#   include <cstdint>
-#   include <cstddef>
-    extern "C" {
-#else
-#   include <stdint.h>
-#   include <stddef.h>
-#   include <stdbool.h>
+#ifndef MTDP_H
+#   error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
 #endif
 
 #include "mtdp/buffer.h"
@@ -152,9 +145,5 @@ typedef struct {
  * @return bool wether a stop was requested (true) or not (false)
  */
 bool mtdp_sink_stop_requested(mtdp_sink_context*);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

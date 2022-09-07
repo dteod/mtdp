@@ -15,7 +15,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <math.h>
 
-#include "mtdp/buffer.h"
+#include "mtdp.h"
 #include "impl/buffer.h"
 
 #if MTDP_BUFFER_FIFO_BLOCK_SIZE == 0

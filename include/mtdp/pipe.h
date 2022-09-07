@@ -16,23 +16,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef MTDP_PIPE_H
 #define MTDP_PIPE_H
 
+#ifndef MTDP_H
+#   error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
+#endif
+
 /** 
  * @file 
  * 
  * @brief Header containing the pipe opaque struct and APIs to interact with it.
- * 
- * @details Avoid importing this file in user code, prefer the mtdp.h umbrella header.
-*/
-
-#ifdef __cplusplus
-#   include <cstdint>
-#   include <cstddef>
-    extern "C" {
-#else
-#   include <stdint.h>
-#   include <stddef.h>
-#   include <stdbool.h>
-#endif
+ * @note Do not import this file in user code, use the mtdp.h umbrella header instead.
+ */
 
 #include "mtdp/buffer.h"
 
@@ -154,9 +147,5 @@ mtdp_buffer* mtdp_pipe_resize(mtdp_pipe *pipe, size_t n_buffers);
  * @retval MTDP_BAD_PTR
  */
 mtdp_buffer* mtdp_pipe_buffers(mtdp_pipe *pipe);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

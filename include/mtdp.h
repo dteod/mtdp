@@ -22,10 +22,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
  * @details Avoid importing files directly from the subdirectory.
 */
 
-#ifndef MTDP_MTDP_H
-#define MTDP_MTDP_H
+#ifndef MTDP_H
+#define MTDP_H
+
+/** \cond */
+#ifdef __cplusplus
+#   include <cstdint>
+#   include <cstddef>
+extern "C" {
+#else
+#   include <stdint.h>
+#   include <stddef.h>
+#   include <stdbool.h>
+#endif
+/** \endcond */
 
 #include "mtdp/errno.h"
 #include "mtdp/pipeline.h"
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

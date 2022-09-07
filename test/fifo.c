@@ -15,7 +15,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <unity.h>
 
-#include "mtdp/buffer.h"
+#include "mtdp.h"
 #include "impl/buffer.h"
 #include <time.h>
 #include <sys/time.h>

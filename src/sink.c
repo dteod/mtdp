@@ -13,7 +13,7 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see  <http://www.gnu.org/licenses/>.  */
 
-#include "mtdp/sink.h"
+#include "mtdp.h"
 #include "impl/sink.h"
 #include "impl/pipe.h"
 #include "bell.h"

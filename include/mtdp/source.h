@@ -17,21 +17,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
  * @file 
  * 
  * @brief Header containing the mtdp_source struct, API and related utilities.
- * 
- * @details Avoid importing this file in user code, prefer the mtdp.h umbrella header.
-*/
+ * @note Do not import this file in user code, use the mtdp.h umbrella header instead.
+ */
 
 #ifndef MTDP_SOURCE_H
 #define MTDP_SOURCE_H
 
-#ifdef __cplusplus
-#   include <cstdint>
-#   include <cstddef>
-    extern "C" {
-#else
-#   include <stdint.h>
-#   include <stddef.h>
-#   include <stdbool.h>
+#ifndef MTDP_H
+#   error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
 #endif
 
 #include "mtdp/buffer.h"
@@ -150,9 +143,5 @@ void mtdp_source_finished(mtdp_source_context*);
  * @return bool wether a stop was requested (true) or not (false)
  */
 bool mtdp_source_stop_requested(mtdp_source_context*);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

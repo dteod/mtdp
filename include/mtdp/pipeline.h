@@ -17,22 +17,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
  * @file 
  * 
  * @brief Header containing the main mtdp_pipeline struct and API.
- * 
- * @details Avoid importing this file in user code, prefer the mtdp.h umbrella header.
-*/
-
+ * @note Do not import this file in user code, use the mtdp.h umbrella header instead.
+ */
 
 #ifndef MTDP_PIPELINE_H
 #define MTDP_PIPELINE_H
+
+#ifndef MTDP_H
+#   error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
+#endif
 
 #include "mtdp/pipe.h"
 #include "mtdp/source.h"
 #include "mtdp/stage.h"
 #include "mtdp/sink.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @brief Opaque struct used to manage a multi-threaded data pipeline.
@@ -335,9 +333,5 @@ bool mtdp_pipeline_stop(mtdp_pipeline *pipeline);
  * @retval MTDP_NOT_ENABLED
  */
 void mtdp_pipeline_wait(mtdp_pipeline *pipeline);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

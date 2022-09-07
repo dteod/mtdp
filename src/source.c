@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <stddef.h>
 
-#include "mtdp/source.h"
+#include "mtdp.h"
 #include "impl/source.h"
 #include "impl/pipe.h"
 #include "thread.h"
