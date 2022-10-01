@@ -95,7 +95,7 @@ typedef struct s_mtdp_pipe mtdp_pipe;
  * @param pipe the pipe to retrieve the next entry from
  * @return mtdp_pipe* the pipe after the one given as a parameter
  */
-mtdp_pipe* mtdp_pipe_next(mtdp_pipe* pipe);
+MTDP_API mtdp_pipe* mtdp_pipe_next(mtdp_pipe* pipe);
 
 /**
  * @brief Resizes the pipe's internal buffers.
@@ -127,7 +127,7 @@ mtdp_pipe* mtdp_pipe_next(mtdp_pipe* pipe);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_NO_MEM
  */
-mtdp_buffer* mtdp_pipe_resize(mtdp_pipe *pipe, size_t n_buffers);
+MTDP_API mtdp_buffer* mtdp_pipe_resize(mtdp_pipe *pipe, size_t n_buffers);
 
 /**
  * @brief Returns the currently empty buffers' pool of a pipe.
@@ -146,6 +146,6 @@ mtdp_buffer* mtdp_pipe_resize(mtdp_pipe *pipe, size_t n_buffers);
  * @retval MTDP_OK
  * @retval MTDP_BAD_PTR
  */
-mtdp_buffer* mtdp_pipe_buffers(mtdp_pipe *pipe);
+MTDP_API mtdp_buffer* mtdp_pipe_buffers(mtdp_pipe *pipe);
 
 #endif

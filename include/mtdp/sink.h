@@ -144,6 +144,6 @@ typedef struct {
  * 
  * @return bool wether a stop was requested (true) or not (false)
  */
-bool mtdp_sink_stop_requested(mtdp_sink_context*);
+MTDP_API bool mtdp_sink_stop_requested(mtdp_sink_context*);
 
 #endif

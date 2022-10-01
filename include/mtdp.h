@@ -37,6 +37,16 @@ extern "C" {
 #endif
 /** \endcond */
 
+#if defined(_MSC_VER) && MTDP_SHARED
+#   if defined(MTDP_INTERNAL)
+#       define MTDP_API __declspec(dllexport)
+#   else
+#       define MTDP_API __declspec(dllimport)
+#   endif
+#else
+#   define MTDP_API extern
+#endif
+
 #include "mtdp/errno.h"
 #include "mtdp/pipeline.h"
 

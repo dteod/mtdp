@@ -142,7 +142,7 @@ typedef union {
  * @retval MTDP_OK
  * @retval MTDP_NO_MEM
  */
-mtdp_pipeline* mtdp_pipeline_create(const mtdp_pipeline_parameters* params);
+MTDP_API mtdp_pipeline* mtdp_pipeline_create(const mtdp_pipeline_parameters* params);
 
 /**
  * @brief Destroys a pipeline.
@@ -154,7 +154,7 @@ mtdp_pipeline* mtdp_pipeline_create(const mtdp_pipeline_parameters* params);
  * @retval MTDP_OK
  * @retval MTDP_BAD_PTR
  */
-void mtdp_pipeline_destroy(mtdp_pipeline *pipeline);
+MTDP_API void mtdp_pipeline_destroy(mtdp_pipeline *pipeline);
 
 /**
  * @brief Returns the source stage of a pipeline.
@@ -173,7 +173,7 @@ void mtdp_pipeline_destroy(mtdp_pipeline *pipeline);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_ACTIVE
  */
-mtdp_source* mtdp_pipeline_get_source(mtdp_pipeline *pipeline);
+MTDP_API mtdp_source* mtdp_pipeline_get_source(mtdp_pipeline *pipeline);
 
 /**
  * @brief Returns the array of internal stages of a pipeline.
@@ -195,7 +195,7 @@ mtdp_source* mtdp_pipeline_get_source(mtdp_pipeline *pipeline);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_ACTIVE
  */
-mtdp_stage* mtdp_pipeline_get_stages(mtdp_pipeline *pipeline);
+MTDP_API mtdp_stage* mtdp_pipeline_get_stages(mtdp_pipeline *pipeline);
 
 /**
  * @brief Returns the sink stage of a pipeline.
@@ -214,7 +214,7 @@ mtdp_stage* mtdp_pipeline_get_stages(mtdp_pipeline *pipeline);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_ACTIVE
  */
-mtdp_sink* mtdp_pipeline_get_sink(mtdp_pipeline *pipeline);
+MTDP_API mtdp_sink* mtdp_pipeline_get_sink(mtdp_pipeline *pipeline);
 
 /**
  * @brief Returns the array of pipes of a pipeline.
@@ -240,7 +240,7 @@ mtdp_sink* mtdp_pipeline_get_sink(mtdp_pipeline *pipeline);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_ACTIVE
  */
-mtdp_pipe* mtdp_pipeline_get_pipes(mtdp_pipeline *pipeline);
+MTDP_API mtdp_pipe* mtdp_pipeline_get_pipes(mtdp_pipeline *pipeline);
 
 /**
  * @brief Enables a pipeline.
@@ -256,7 +256,7 @@ mtdp_pipe* mtdp_pipeline_get_pipes(mtdp_pipeline *pipeline);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_ENABLED
  */
-bool mtdp_pipeline_enable(mtdp_pipeline *pipeline);
+MTDP_API bool mtdp_pipeline_enable(mtdp_pipeline *pipeline);
 
 /**
  * @brief Disables a pipeline.
@@ -278,7 +278,7 @@ bool mtdp_pipeline_enable(mtdp_pipeline *pipeline);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_NOT_ENABLED
  */
-bool mtdp_pipeline_disable(mtdp_pipeline *pipeline);
+MTDP_API bool mtdp_pipeline_disable(mtdp_pipeline *pipeline);
 
 /**
  * @brief Starts a pipeline.
@@ -293,7 +293,7 @@ bool mtdp_pipeline_disable(mtdp_pipeline *pipeline);
  * @retval MTDP_ACTIVE
  * @retval MTDP_NOT_ENABLED
  */
-bool mtdp_pipeline_start(mtdp_pipeline *pipeline);
+MTDP_API bool mtdp_pipeline_start(mtdp_pipeline *pipeline);
 
 /**
  * @brief Stops a pipeline.
@@ -311,7 +311,7 @@ bool mtdp_pipeline_start(mtdp_pipeline *pipeline);
  * @retval MTDP_ENABLED
  * @retval MTDP_NOT_ENABLED
  */
-bool mtdp_pipeline_stop(mtdp_pipeline *pipeline);
+MTDP_API bool mtdp_pipeline_stop(mtdp_pipeline *pipeline);
 
 /**
  * @brief Waits for a pipeline to finish execution.
@@ -332,6 +332,6 @@ bool mtdp_pipeline_stop(mtdp_pipeline *pipeline);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_NOT_ENABLED
  */
-void mtdp_pipeline_wait(mtdp_pipeline *pipeline);
+MTDP_API void mtdp_pipeline_wait(mtdp_pipeline *pipeline);
 
 #endif

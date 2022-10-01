@@ -174,6 +174,6 @@ typedef struct {
  * 
  * @return bool wether a stop was requested (true) or not (false)
  */
-bool mtdp_stage_stop_requested(mtdp_stage_context*);
+MTDP_API bool mtdp_stage_stop_requested(mtdp_stage_context*);
 
 #endif

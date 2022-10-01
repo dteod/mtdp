@@ -133,7 +133,7 @@ typedef struct {
  * mtdp_pipeline_wait. 
  * 
  */
-void mtdp_source_finished(mtdp_source_context*);
+MTDP_API void mtdp_source_finished(mtdp_source_context*);
 
 /**
  * @brief This function may be called from within the source callback to
@@ -142,6 +142,6 @@ void mtdp_source_finished(mtdp_source_context*);
  * 
  * @return bool wether a stop was requested (true) or not (false)
  */
-bool mtdp_source_stop_requested(mtdp_source_context*);
+MTDP_API bool mtdp_source_stop_requested(mtdp_source_context*);
 
 #endif

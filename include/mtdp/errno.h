@@ -69,7 +69,7 @@ enum mtdp_error {
  * 
  * @return const enum mtdp_error* pointer to the mtdp_errno variable
  */
-const enum mtdp_error* mtdp_errno_ptr();
+MTDP_API const enum mtdp_error* mtdp_errno_ptr();
 
 /**
  * @brief Latest return status for mtdp functions.

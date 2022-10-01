@@ -33,95 +33,100 @@ default_setting(MTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES     0           )
 default_setting(MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO        0.5         )
 default_setting(MTDP_BUFFER_FIFO_BLOCK_SIZE                 16          )
 default_setting(MTDP_PIPELINE_CONSUMER_TIMEOUT_US           100000      )
-default_setting(MTDP_STRICT_ISO_C                           false        )
+default_setting(MTDP_STRICT_ISO_C                           false       )
 
-add_library(mtdp-object OBJECT
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/buffer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/errno.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/pipe.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/pipeline.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/sink.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/source.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/stage.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/atomic.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/bell.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/buffer.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/errno.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/futex.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/memory.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/pipe.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/pipeline.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sem.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/sink.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/source.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/stage.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/thread.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/worker.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/worker.h
-)
-if(WIN32)
-    # As of 31/08/22 _Thread_local is not implemented in MSVC
-    # compiling as C so we compile errno as C++ (with proper
-    # name mangling set in the source code)
-    set_property(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/errno.c PROPERTY LANGUAGE CXX)
-endif()
-if(${CMAKE_VERSION} GREATER_EQUAL 3.23)
-    target_sources(mtdp-object PUBLIC
-        FILE_SET HEADERS
-        BASE_DIRS 
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/
-        FILES
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/buffer.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/pipe.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/pipeline.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/sink.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/source.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/stage.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/errno.h
+function(add_mtdp_library LIBNAME LIBTYPE SHARED_VALUE)
+    add_library(${LIBNAME} ${LIBTYPE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/buffer.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/errno.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/pipe.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/pipeline.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/sink.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/source.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/impl/stage.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/atomic.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/bell.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/buffer.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/errno.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/futex.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/memory.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/pipe.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/pipeline.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/sem.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/sink.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/source.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/stage.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/thread.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/worker.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/worker.h
     )
-endif()
-if(${CMAKE_VERSION} GREATER_EQUAL 3.21)
-    target_compile_features(mtdp-object PUBLIC c_std_17)
-elseif()
-    target_compile_features(mtdp-object PUBLIC c_std_11)
-endif()
-target_include_directories(mtdp-object
-    PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>
-    PUBLIC  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
-    PUBLIC  $<INSTALL_INTERFACE:include/>
-)
-target_compile_definitions(mtdp-object PUBLIC
-    -DMTDP_STATIC_THREADSAFE=${MTDP_STATIC_THREADSAFE}
-    -DMTDP_STATIC_THREADSAFE_LOCKFREE=${MTDP_STATIC_THREADSAFE_LOCKFREE}
-    -DMTDP_PIPELINE_STATIC_INSTANCES=${MTDP_PIPELINE_STATIC_INSTANCES}
-    -DMTDP_PIPE_VECTOR_STATIC_SIZE=${MTDP_PIPE_VECTOR_STATIC_SIZE}
-    -DMTDP_STAGE_VECTOR_STATIC_SIZE=${MTDP_STAGE_VECTOR_STATIC_SIZE}
-    -DMTDP_STAGE_IMPL_VECTOR_STATIC_SIZE=${MTDP_STAGE_IMPL_VECTOR_STATIC_SIZE}
-    -DMTDP_BUFFER_POOL_STATIC_SIZE=${MTDP_BUFFER_POOL_STATIC_SIZE}
-    -DMTDP_BUFFER_FIFO_BLOCKS=${MTDP_BUFFER_FIFO_BLOCKS}
-    -DMTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE=${MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE}
-    -DMTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES=${MTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES}
-    -DMTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO=${MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO}
-    -DMTDP_BUFFER_FIFO_BLOCK_SIZE=${MTDP_BUFFER_FIFO_BLOCK_SIZE}
-    -DMTDP_PIPELINE_CONSUMER_TIMEOUT_US=${MTDP_PIPELINE_CONSUMER_TIMEOUT_US}
-    -DMTDP_STRICT_ISO_C=${MTDP_STRICT_ISO_C}
-)
-if(UNIX)
-    target_link_libraries(mtdp-object PUBLIC m atomic pthread)
-elseif(WIN32)
-    target_link_libraries(mtdp-object PUBLIC synchronization.lib)
-endif()
-target_hard_compilation(mtdp-object PUBLIC)
-set_target_properties(mtdp-object PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    if(WIN32)
+        # As of 31/08/22 _Thread_local is not implemented in MSVC
+        # compiling as C so we compile errno as C++ (with proper
+        # name mangling set in the source code)
+        set_property(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/errno.c PROPERTY LANGUAGE CXX)
+    endif()
+    if(${CMAKE_VERSION} GREATER_EQUAL 3.23)
+        target_sources(${LIBNAME} PUBLIC
+            FILE_SET HEADERS
+            BASE_DIRS 
+                ${CMAKE_CURRENT_SOURCE_DIR}/include/
+            FILES
+                ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/buffer.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/pipe.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/pipeline.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/sink.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/source.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/stage.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/errno.h
+        )
+    endif()
+    if(${CMAKE_VERSION} GREATER_EQUAL 3.21)
+        target_compile_features(${LIBNAME} PUBLIC c_std_17)
+    elseif()
+        target_compile_features(${LIBNAME} PUBLIC c_std_11)
+    endif()
+    target_include_directories(${LIBNAME}
+        PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>
+        PUBLIC  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+        PUBLIC  $<INSTALL_INTERFACE:include/>
+    )
+    target_compile_definitions(${LIBNAME}
+        PUBLIC  $<BUILD_INTERFACE:MTDP_INTERNAL=1>
+        PUBLIC  $<INSTALL_INTERFACE:MTDP_INTERNAL=0>
+        PUBLIC  -DMTDP_SHARED=${SHARED_VALUE}
+        PRIVATE -DMTDP_STATIC_THREADSAFE=${MTDP_STATIC_THREADSAFE}
+        PRIVATE -DMTDP_STATIC_THREADSAFE_LOCKFREE=${MTDP_STATIC_THREADSAFE_LOCKFREE}
+        PRIVATE -DMTDP_PIPELINE_STATIC_INSTANCES=${MTDP_PIPELINE_STATIC_INSTANCES}
+        PRIVATE -DMTDP_PIPE_VECTOR_STATIC_SIZE=${MTDP_PIPE_VECTOR_STATIC_SIZE}
+        PRIVATE -DMTDP_STAGE_VECTOR_STATIC_SIZE=${MTDP_STAGE_VECTOR_STATIC_SIZE}
+        PRIVATE -DMTDP_STAGE_IMPL_VECTOR_STATIC_SIZE=${MTDP_STAGE_IMPL_VECTOR_STATIC_SIZE}
+        PRIVATE -DMTDP_BUFFER_POOL_STATIC_SIZE=${MTDP_BUFFER_POOL_STATIC_SIZE}
+        PRIVATE -DMTDP_BUFFER_FIFO_BLOCKS=${MTDP_BUFFER_FIFO_BLOCKS}
+        PRIVATE -DMTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE=${MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE}
+        PRIVATE -DMTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES=${MTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES}
+        PRIVATE -DMTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO=${MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO}
+        PRIVATE -DMTDP_BUFFER_FIFO_BLOCK_SIZE=${MTDP_BUFFER_FIFO_BLOCK_SIZE}
+        PRIVATE -DMTDP_PIPELINE_CONSUMER_TIMEOUT_US=${MTDP_PIPELINE_CONSUMER_TIMEOUT_US}
+        PRIVATE -DMTDP_STRICT_ISO_C=${MTDP_STRICT_ISO_C}
+    )
+    if(UNIX)
+        target_link_libraries(${LIBNAME} PUBLIC m atomic pthread)
+    elseif(WIN32)
+        target_link_libraries(${LIBNAME} PUBLIC synchronization.lib)
+    endif()
+    target_hard_compilation(${LIBNAME} PUBLIC)
+    if(${SHARED_VALUE})
+        set_target_properties(${LIBNAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+        set_target_properties(${LIBNAME} PROPERTIES OUTPUT_NAME mtdp VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_VERSION})
+    else()
+        set_target_properties(${LIBNAME} PROPERTIES OUTPUT_NAME mtdp)
+    endif()
+endfunction()
 
-add_library(static STATIC)
-target_link_libraries(static PRIVATE mtdp-object)
-set_target_properties(static PROPERTIES OUTPUT_NAME mtdp)
-
-add_library(shared SHARED)
-target_link_libraries(shared PRIVATE mtdp-object)
-set_target_properties(shared PROPERTIES OUTPUT_NAME mtdp VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_VERSION})
+add_mtdp_library(static STATIC 0)
+add_mtdp_library(shared SHARED 1)
 
 find_package(Doxygen QUIET)
 if(DOXYGEN_FOUND)
@@ -139,14 +144,30 @@ find_package(unity QUIET)
 if(unity_FOUND)
     add_executable(mtdp_fifo_test ${CMAKE_CURRENT_SOURCE_DIR}/test/fifo.c)
     target_include_directories(mtdp_fifo_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/)
-    target_link_libraries(mtdp_fifo_test PRIVATE mtdp-object unity::framework)
+    target_link_libraries(mtdp_fifo_test PRIVATE static unity::framework)
+    target_compile_definitions(mtdp_fifo_test
+        PRIVATE -DMTDP_STATIC_THREADSAFE=${MTDP_STATIC_THREADSAFE}
+        PRIVATE -DMTDP_STATIC_THREADSAFE_LOCKFREE=${MTDP_STATIC_THREADSAFE_LOCKFREE}
+        PRIVATE -DMTDP_PIPELINE_STATIC_INSTANCES=${MTDP_PIPELINE_STATIC_INSTANCES}
+        PRIVATE -DMTDP_PIPE_VECTOR_STATIC_SIZE=${MTDP_PIPE_VECTOR_STATIC_SIZE}
+        PRIVATE -DMTDP_STAGE_VECTOR_STATIC_SIZE=${MTDP_STAGE_VECTOR_STATIC_SIZE}
+        PRIVATE -DMTDP_STAGE_IMPL_VECTOR_STATIC_SIZE=${MTDP_STAGE_IMPL_VECTOR_STATIC_SIZE}
+        PRIVATE -DMTDP_BUFFER_POOL_STATIC_SIZE=${MTDP_BUFFER_POOL_STATIC_SIZE}
+        PRIVATE -DMTDP_BUFFER_FIFO_BLOCKS=${MTDP_BUFFER_FIFO_BLOCKS}
+        PRIVATE -DMTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE=${MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE}
+        PRIVATE -DMTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES=${MTDP_BUFFER_FIFO_BLOCK_STATIC_INSTANCES}
+        PRIVATE -DMTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO=${MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO}
+        PRIVATE -DMTDP_BUFFER_FIFO_BLOCK_SIZE=${MTDP_BUFFER_FIFO_BLOCK_SIZE}
+        PRIVATE -DMTDP_PIPELINE_CONSUMER_TIMEOUT_US=${MTDP_PIPELINE_CONSUMER_TIMEOUT_US}
+        PRIVATE -DMTDP_STRICT_ISO_C=${MTDP_STRICT_ISO_C}
+    )
 endif()
 
 add_executable(mtdp_infinite_datastream_example ${CMAKE_CURRENT_SOURCE_DIR}/examples/infinite_datastream.c)
-target_link_libraries(mtdp_infinite_datastream_example PRIVATE mtdp-object)
+target_link_libraries(mtdp_infinite_datastream_example PRIVATE static)
 
 add_executable(mtdp_finite_datastream_example ${CMAKE_CURRENT_SOURCE_DIR}/examples/finite_datastream.c)
-target_link_libraries(mtdp_finite_datastream_example PRIVATE mtdp-object)
+target_link_libraries(mtdp_finite_datastream_example PRIVATE static)
 
 set(CPACK_GENERATOR "TZST")
 include(CPack)
@@ -164,12 +185,12 @@ write_basic_package_version_file(
     COMPATIBILITY SameMajorVersion
 )
 if(${CMAKE_VERSION} GREATER_EQUAL 3.23)
-    install(TARGETS mtdp-object static shared
+    install(TARGETS static shared
         EXPORT mtdpTargets
         FILE_SET HEADERS
     )
 else()
-    install(TARGETS mtdp-object static shared
+    install(TARGETS static shared
         EXPORT mtdpTargets
     )
 endif()
