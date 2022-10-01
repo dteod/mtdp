@@ -140,24 +140,16 @@ MTDP_MEMORY_ACCESS void  Type##_dealloc(Type*);
 #   define MTDP_DEFINE_STATIC_INSTANCE(Type, Name)                              \
     static Type Name;                                                           \
     static bool Name##_owned = false;                                           \
-    static mtx_t Name##_mutex;                                                  \
-    static once_flag Name##_init_flag = ONCE_FLAG_INIT;                         \
-    static void Name##_init_once() { mtx_init(&Name##_mutex, mtx_plain); }      \
     Type* Type##_alloc() {                                                      \
-        call_once(&Name##_init_flag, Name##_init_once);                         \
-        mtx_lock(&Name##_mutex);                                                \
         if(!Name##_owned) {                                                     \
             Name##_owned = true;                                                \
             return &Name;                                                       \
         }                                                                       \
-        mtx_unlock(&Name##_mutex);                                              \
         return NULL;                                                            \
     }                                                                           \
     void Type##_dealloc(Type* MTDP_MACRO_ARG) {                                 \
         if(DEFINE_STATIC_INSTANCE_ARG == &Name) {                               \
-            mtx_lock(&Name##_mutex);                                            \
             Name##_owned = false;                                               \
-            mtx_unlock(&Name##_mutex);                                          \
         }                                                                       \
     }
 #   define MTDP_DEFINE_STATIC_INSTANCES(Type, Name, Number)                     \
