@@ -33,23 +33,29 @@ along with this program.  If not, see
  */
 
 #ifdef __unix__
-#   include <linux/futex.h>
-#   include <sys/syscall.h>
-#   include <unistd.h>
-#   include <limits.h>
-#   define mtdp_futex_wait(ftx, val) \
-    while(atomic_load(ftx) == val && syscall(SYS_futex, (ftx), FUTEX_WAIT_PRIVATE, val, NULL) == 0) {}
-#   define mtdp_futex_notify_one(ftx) (syscall(SYS_futex, (ftx), FUTEX_WAKE_PRIVATE, 1))
-#   define mtdp_futex_notify_all(ftx) (syscall(SYS_futex, (ftx), FUTEX_WAKE_PRIVATE, INT_MAX))
-#elif _WIN32
-#   include <windows.h>
-#   include <synchapi.h>
-#   define mtdp_futex_wait(ftx, val) do { uint32_t val_ = val; do {} while((atomic_load(ftx) == val) && !WaitOnAddress((PVOID)ftx, &val_, sizeof(uint32_t), INFINITE)); } while(0)
-#   define mtdp_futex_notify_one(ftx) WakeByAddressSingle((PVOID)ftx)
-#   define mtdp_futex_notify_all(ftx) WakeByAddressAll((PVOID)ftx)
-#else
-#   error futex not implemented on this platform
-#endif
+#  include <limits.h>
+#  include <unistd.h>
 
+#  include <linux/futex.h>
+#  include <sys/syscall.h>
+#  define mtdp_futex_wait(ftx, val)                                                                                              \
+    while(atomic_load(ftx) == val && syscall(SYS_futex, (ftx), FUTEX_WAIT_PRIVATE, val, NULL) == 0) {                            \
+    }
+#  define mtdp_futex_notify_one(ftx) (syscall(SYS_futex, (ftx), FUTEX_WAKE_PRIVATE, 1))
+#  define mtdp_futex_notify_all(ftx) (syscall(SYS_futex, (ftx), FUTEX_WAKE_PRIVATE, INT_MAX))
+#elif _WIN32
+#  include <synchapi.h>
+#  include <windows.h>
+#  define mtdp_futex_wait(ftx, val)                                                                                              \
+    do {                                                                                                                         \
+      uint32_t val_ = val;                                                                                                       \
+      do {                                                                                                                       \
+      } while((atomic_load(ftx) == val) && !WaitOnAddress((PVOID)ftx, &val_, sizeof(uint32_t), INFINITE));                       \
+    } while(0)
+#  define mtdp_futex_notify_one(ftx) WakeByAddressSingle((PVOID)ftx)
+#  define mtdp_futex_notify_all(ftx) WakeByAddressAll((PVOID)ftx)
+#else
+#  error futex not implemented on this platform
+#endif
 
 #endif

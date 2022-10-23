@@ -16,20 +16,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef MTDP_IMPL_SOURCE_H
 #define MTDP_IMPL_SOURCE_H
 
-#include <stdbool.h>
-
-#include "mtdp/source.h"
-#include "mtdp/pipe.h"
-#include "worker.h"
 #include "futex.h"
+#include "mtdp/pipe.h"
+#include "mtdp/source.h"
+#include "worker.h"
+
+#include <stdbool.h>
 
 typedef struct {
     mtdp_source_context context;
-    mtdp_worker worker;
-    mtdp_source user_data;
-    mtdp_pipe* output_pipe;
-    mtdp_futex done;
-    bool initialized;
+    mtdp_worker         worker;
+    mtdp_source         user_data;
+    mtdp_pipe*          output_pipe;
+    mtdp_futex          done;
+    bool                initialized;
 } mtdp_source_impl;
 
 void mtdp_source_create_thread(mtdp_source_impl*);

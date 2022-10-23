@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #define MTDP_PIPE_H
 
 #ifndef MTDP_H
-#   error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
+#  error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
 #endif
 
 /** 
@@ -127,7 +127,7 @@ MTDP_API mtdp_pipe* mtdp_pipe_next(mtdp_pipe* pipe);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_NO_MEM
  */
-MTDP_API mtdp_buffer* mtdp_pipe_resize(mtdp_pipe *pipe, size_t n_buffers);
+MTDP_API mtdp_buffer* mtdp_pipe_resize(mtdp_pipe* pipe, size_t n_buffers);
 
 /**
  * @brief Returns the currently empty buffers' pool of a pipe.
@@ -146,6 +146,6 @@ MTDP_API mtdp_buffer* mtdp_pipe_resize(mtdp_pipe *pipe, size_t n_buffers);
  * @retval MTDP_OK
  * @retval MTDP_BAD_PTR
  */
-MTDP_API mtdp_buffer* mtdp_pipe_buffers(mtdp_pipe *pipe);
+MTDP_API mtdp_buffer* mtdp_pipe_buffers(mtdp_pipe* pipe);
 
 #endif

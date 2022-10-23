@@ -16,18 +16,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef MTDP_IMPL_PIPE_H
 #define MTDP_IMPL_PIPE_H
 
-#include <stdint.h>
-#include <stddef.h>
-#include "thread.h"
-
 #include "impl/buffer.h"
 #include "sem.h"
+#include "thread.h"
+
+#include <stddef.h>
+#include <stdint.h>
 
 struct s_mtdp_pipe {
     mtx_t pool_mutex;
     mtx_t fifo_mutex;
 
-    size_t total_buffers;
+    size_t           total_buffers;
     mtdp_buffer_pool pool;
     mtdp_buffer_fifo fifo;
 
@@ -38,17 +38,16 @@ bool mtdp_pipe_init(mtdp_pipe*);
 void mtdp_pipe_destroy(mtdp_pipe*);
 void mtdp_pipe_clear(mtdp_pipe*);
 
-mtdp_buffer  mtdp_pipe_get_empty_buffer(mtdp_pipe*);
-bool         mtdp_pipe_push_buffer(mtdp_pipe*, mtdp_buffer);
-mtdp_buffer  mtdp_pipe_get_full_buffer(mtdp_pipe*);
-bool         mtdp_pipe_put_back(mtdp_pipe*, mtdp_buffer);
-
+mtdp_buffer mtdp_pipe_get_empty_buffer(mtdp_pipe*);
+bool        mtdp_pipe_push_buffer(mtdp_pipe*, mtdp_buffer);
+mtdp_buffer mtdp_pipe_get_full_buffer(mtdp_pipe*);
+bool        mtdp_pipe_put_back(mtdp_pipe*, mtdp_buffer);
 
 #if MTDP_PIPE_VECTOR_STATIC_SIZE
-    typedef mtdp_pipe mtdp_pipe_vector[MTDP_PIPE_VECTOR_STATIC_SIZE];
+typedef mtdp_pipe mtdp_pipe_vector[MTDP_PIPE_VECTOR_STATIC_SIZE];
 #else
-#   include <stdlib.h>
-    typedef mtdp_pipe* mtdp_pipe_vector;
+#  include <stdlib.h>
+typedef mtdp_pipe* mtdp_pipe_vector;
 #endif
 
 bool mtdp_pipe_vector_resize(mtdp_pipe_vector*, size_t);

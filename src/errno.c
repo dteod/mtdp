@@ -13,8 +13,8 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#include "api.h"
 #include "mtdp.h"
-#include "impl/errno.h"
 
 /* 
     As of 31/08/2022 _Thread_local was not available on MSVC compiling as C,
@@ -22,24 +22,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
     But I am still mangling mtdp_errno_* functions as C
     to make them linkable to other C files compiled as C.
 */
+#include "impl/errno.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #if !defined(_WIN32)
-#define thread_local _Thread_local 
+#  define thread_local _Thread_local
 #endif
 
 static thread_local enum mtdp_error mtdp_errno_location = MTDP_OK;
 
-enum mtdp_error* mtdp_errno_ptr_mutable()
+MTDP_API_INTERNAL enum mtdp_error*
+mtdp_errno_ptr_mutable()
 {
     return &mtdp_errno_location;
 }
 
-const enum mtdp_error* mtdp_errno_ptr()
+MTDP_API_INTERNAL const enum mtdp_error*
+mtdp_errno_ptr()
 {
     return &mtdp_errno_location;
+}
+
+MTDP_API_INTERNAL const char*
+mtdp_strerror(enum mtdp_error error)
+{
+    switch(error) {
+    case MTDP_OK: return "ok";
+    case MTDP_NO_MEM: return "no memory error";
+    case MTDP_ACTIVE: return "pipeline is active";
+    case MTDP_ENABLED: return "pipeline is enabled";
+    case MTDP_NOT_ENABLED: return "pipeline is not enabled";
+    case MTDP_BAD_PTR: return "bad handle";
+    case MTDP_THRD_ERROR: return "thrd error";
+    case MTDP_MTX_ERROR: return "mtx error";
+    case MTDP_CND_ERROR: return "cnd error";
+    default: return "errno error";
+    }
 }
 
 #ifdef __cplusplus

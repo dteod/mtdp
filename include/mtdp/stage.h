@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #define MTDP_STAGE_H
 
 #ifndef MTDP_H
-#   error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
+#  error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
 #endif
 
 #include "mtdp/buffer.h"
@@ -45,7 +45,7 @@ typedef struct {
      * C++ class created with new. It is copied from the user-provided
      * data on the stage context every time the pipeline is enabled.
      */
-    mtdp_stage_data      self;
+    mtdp_stage_data self;
 
     /**
      * @brief The input buffer coming from the pipe.
@@ -59,8 +59,8 @@ typedef struct {
      * pollute the pipe with deallocated data that will segfault as
      * soon as they will be accessed from the previous stages.
      */
-    mtdp_buffer          input;
-    
+    mtdp_buffer input;
+
     /**
      * @brief The (initially empty) output buffer taken from the output pipe.
      * 
@@ -72,7 +72,7 @@ typedef struct {
      * pollute the pipe with deallocated data that will segfault as
      * soon as they will be accessed from the previous stages.
      */
-    mtdp_buffer          output;
+    mtdp_buffer output;
 
     /**
      * @brief Set this to tell the library to push a buffer on the next stage
@@ -88,7 +88,7 @@ typedef struct {
      * the buffer, that you do are not ready to push the buffer yet,
      * thus reducing the stage throughput to zero.
      */
-    bool                 ready_to_push;
+    bool ready_to_push;
 
     /**
      * @brief Set this to tell the library to give you a new input buffer.
@@ -103,13 +103,13 @@ typedef struct {
      * the previous buffer, that you do not need any more buffers yet,
      * thus reducing the stage throughput to zero.
      */
-    bool                 ready_to_pull;
+    bool ready_to_pull;
 } mtdp_stage_context;
 
 /**
  * @brief The stage callback accepts a single parameter, that is its context.
  */
-typedef void(*mtdp_stage_callback)(mtdp_stage_context*);
+typedef void (*mtdp_stage_callback)(mtdp_stage_context*);
 
 /**
  * @brief Struct to be filled by the user with data describing an internal stage.
@@ -128,7 +128,7 @@ typedef struct {
      * will not be set, and the default behavior is platform dependent (often
      * it will inherit the name of the thread enabling the pipeline).
      */
-    const char*          name;
+    const char* name;
 
     /**
      * @brief User data provided to the stage.
@@ -138,7 +138,7 @@ typedef struct {
      * communicate partial results to external threads, or even just
      * to provide a configuration mechanism. It is optional to set.
      */
-    mtdp_stage_data      self;
+    mtdp_stage_data self;
 
     /**
      * @brief Stage initialization function.
@@ -148,7 +148,7 @@ typedef struct {
      * It may be used e.g. for initializing scratch data directly from within
      * the stage callback on/with the @p self parameter. It is optional to set.
      */
-    mtdp_stage_callback  init;
+    mtdp_stage_callback init;
 
     /**
      * @brief Callback to be called by the stage on every iteration.
@@ -164,7 +164,7 @@ typedef struct {
      * @p ready_to_pull parameter in the stage context or the input buffers
      * will not be updated and the stage thoughput will be zeroed.
      */
-    mtdp_stage_callback  process;
+    mtdp_stage_callback process;
 } mtdp_stage;
 
 /**

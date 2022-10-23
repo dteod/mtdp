@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #define MTDP_SOURCE_H
 
 #ifndef MTDP_H
-#   error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
+#  error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
 #endif
 
 #include "mtdp/buffer.h"
@@ -45,8 +45,8 @@ typedef struct {
      * C++ class created with new. It is copied from the user-provided
      * data on the source context every time the pipeline is enabled.
      */
-    mtdp_source_data     self;
-    mtdp_buffer          output;
+    mtdp_source_data self;
+    mtdp_buffer      output;
 
     /**
      * @brief Set this to tell the library to push a buffer on the output
@@ -62,13 +62,13 @@ typedef struct {
      * the buffer, that you do are not ready to push the buffer yet,
      * thus reducing the source throughput to zero.
      */
-    bool                 ready_to_push;
+    bool ready_to_push;
 } mtdp_source_context;
 
 /**
  * @brief The source callback accepts a single parameter, that is its context.
  */
-typedef void(*mtdp_source_callback)(mtdp_source_context*);
+typedef void (*mtdp_source_callback)(mtdp_source_context*);
 
 /**
  * @brief Struct to be filled by the user with data describing the source stage.
@@ -87,7 +87,7 @@ typedef struct {
      * will not be set, and the default behavior is platform dependent (often
      * it will inherit the name of the thread enabling the pipeline).
      */
-    const char*          name;
+    const char* name;
 
     /**
      * @brief User data provided to the source.
@@ -97,7 +97,7 @@ typedef struct {
      * communicate partial results to external threads, or even just
      * to provide a configuration mechanism. It is optional to set.
      */
-    mtdp_source_data      self;
+    mtdp_source_data self;
 
     /**
      * @brief Source initialization function.

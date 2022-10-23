@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #define MTDP_BUFFER_H
 
 #ifndef MTDP_H
-#   error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
+#  error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
 #endif
 
 /**

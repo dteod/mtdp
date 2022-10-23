@@ -16,20 +16,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef MTDP_IMPL_SINK_H
 #define MTDP_IMPL_SINK_H
 
-#include <stdbool.h>
-
-#include "mtdp/sink.h"
-#include "mtdp/pipe.h"
-#include "worker.h"
 #include "futex.h"
+#include "mtdp/pipe.h"
+#include "mtdp/sink.h"
+#include "worker.h"
+
+#include <stdbool.h>
 
 typedef struct {
     mtdp_sink_context context;
-    mtdp_worker worker;
-    mtdp_sink   user_data;
-    mtdp_pipe*  input_pipe;
-    mtdp_futex  done;
-    bool initialized;
+    mtdp_worker       worker;
+    mtdp_sink         user_data;
+    mtdp_pipe*        input_pipe;
+    mtdp_futex        done;
+    bool              initialized;
 } mtdp_sink_impl;
 
 void mtdp_sink_create_thread(mtdp_sink_impl*);

@@ -24,13 +24,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #define MTDP_PIPELINE_H
 
 #ifndef MTDP_H
-#   error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
+#  error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
 #endif
 
 #include "mtdp/pipe.h"
+#include "mtdp/sink.h"
 #include "mtdp/source.h"
 #include "mtdp/stage.h"
-#include "mtdp/sink.h"
 
 /**
  * @brief Opaque struct used to manage a multi-threaded data pipeline.
@@ -118,7 +118,7 @@ typedef struct {
  */
 typedef union {
     mtdp_pipeline_params params;
-    uint8_t padding[1024];
+    uint8_t              padding[1024];
 } mtdp_pipeline_parameters;
 
 /**
@@ -154,7 +154,7 @@ MTDP_API mtdp_pipeline* mtdp_pipeline_create(const mtdp_pipeline_parameters* par
  * @retval MTDP_OK
  * @retval MTDP_BAD_PTR
  */
-MTDP_API void mtdp_pipeline_destroy(mtdp_pipeline *pipeline);
+MTDP_API void mtdp_pipeline_destroy(mtdp_pipeline* pipeline);
 
 /**
  * @brief Returns the source stage of a pipeline.
@@ -173,7 +173,7 @@ MTDP_API void mtdp_pipeline_destroy(mtdp_pipeline *pipeline);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_ACTIVE
  */
-MTDP_API mtdp_source* mtdp_pipeline_get_source(mtdp_pipeline *pipeline);
+MTDP_API mtdp_source* mtdp_pipeline_get_source(mtdp_pipeline* pipeline);
 
 /**
  * @brief Returns the array of internal stages of a pipeline.
@@ -195,7 +195,7 @@ MTDP_API mtdp_source* mtdp_pipeline_get_source(mtdp_pipeline *pipeline);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_ACTIVE
  */
-MTDP_API mtdp_stage* mtdp_pipeline_get_stages(mtdp_pipeline *pipeline);
+MTDP_API mtdp_stage* mtdp_pipeline_get_stages(mtdp_pipeline* pipeline);
 
 /**
  * @brief Returns the sink stage of a pipeline.
@@ -214,7 +214,7 @@ MTDP_API mtdp_stage* mtdp_pipeline_get_stages(mtdp_pipeline *pipeline);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_ACTIVE
  */
-MTDP_API mtdp_sink* mtdp_pipeline_get_sink(mtdp_pipeline *pipeline);
+MTDP_API mtdp_sink* mtdp_pipeline_get_sink(mtdp_pipeline* pipeline);
 
 /**
  * @brief Returns the array of pipes of a pipeline.
@@ -240,7 +240,7 @@ MTDP_API mtdp_sink* mtdp_pipeline_get_sink(mtdp_pipeline *pipeline);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_ACTIVE
  */
-MTDP_API mtdp_pipe* mtdp_pipeline_get_pipes(mtdp_pipeline *pipeline);
+MTDP_API mtdp_pipe* mtdp_pipeline_get_pipes(mtdp_pipeline* pipeline);
 
 /**
  * @brief Enables a pipeline.
@@ -256,7 +256,7 @@ MTDP_API mtdp_pipe* mtdp_pipeline_get_pipes(mtdp_pipeline *pipeline);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_ENABLED
  */
-MTDP_API bool mtdp_pipeline_enable(mtdp_pipeline *pipeline);
+MTDP_API bool mtdp_pipeline_enable(mtdp_pipeline* pipeline);
 
 /**
  * @brief Disables a pipeline.
@@ -278,7 +278,7 @@ MTDP_API bool mtdp_pipeline_enable(mtdp_pipeline *pipeline);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_NOT_ENABLED
  */
-MTDP_API bool mtdp_pipeline_disable(mtdp_pipeline *pipeline);
+MTDP_API bool mtdp_pipeline_disable(mtdp_pipeline* pipeline);
 
 /**
  * @brief Starts a pipeline.
@@ -293,7 +293,7 @@ MTDP_API bool mtdp_pipeline_disable(mtdp_pipeline *pipeline);
  * @retval MTDP_ACTIVE
  * @retval MTDP_NOT_ENABLED
  */
-MTDP_API bool mtdp_pipeline_start(mtdp_pipeline *pipeline);
+MTDP_API bool mtdp_pipeline_start(mtdp_pipeline* pipeline);
 
 /**
  * @brief Stops a pipeline.
@@ -308,10 +308,10 @@ MTDP_API bool mtdp_pipeline_start(mtdp_pipeline *pipeline);
  * @return true on success, false on error
  * @retval MTDP_OK
  * @retval MTDP_BAD_PTR
- * @retval MTDP_ENABLED
+ * @retval MTDP_ENABLED 
  * @retval MTDP_NOT_ENABLED
  */
-MTDP_API bool mtdp_pipeline_stop(mtdp_pipeline *pipeline);
+MTDP_API bool mtdp_pipeline_stop(mtdp_pipeline* pipeline);
 
 /**
  * @brief Waits for a pipeline to finish execution.
@@ -332,6 +332,6 @@ MTDP_API bool mtdp_pipeline_stop(mtdp_pipeline *pipeline);
  * @retval MTDP_BAD_PTR
  * @retval MTDP_NOT_ENABLED
  */
-MTDP_API void mtdp_pipeline_wait(mtdp_pipeline *pipeline);
+MTDP_API void mtdp_pipeline_wait(mtdp_pipeline* pipeline);
 
 #endif

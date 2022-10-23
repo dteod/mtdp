@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #define MTDP_ERRNO_H
 
 #ifndef MTDP_H
-#   error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
+#  error do not #include <mtdp/buffer.h> directly, #include <mtdp.h> instead
 #endif
 
 /**
@@ -55,7 +55,6 @@ enum mtdp_error {
     MTDP_MTX_ERROR,
     /** Error on a cnd_* function call */
     MTDP_CND_ERROR,
-
 };
 
 /**
@@ -77,5 +76,14 @@ MTDP_API const enum mtdp_error* mtdp_errno_ptr();
  * @note The retrieved value is thread local.
  */
 #define mtdp_errno (*mtdp_errno_ptr())
+
+/**
+ * @brief Returns a human-readable string from an mtdp_error.
+ * 
+ * @param error error to visualize its string for
+ * 
+ * @return const char* a human-readable string describing @p error
+ */
+MTDP_API const char* mtdp_strerror(enum mtdp_error error);
 
 #endif

@@ -39,9 +39,9 @@ extern "C" {
 
 #if defined(_MSC_VER) && MTDP_SHARED
 #   if defined(MTDP_INTERNAL)
-#       define MTDP_API __declspec(dllexport)
+#       define MTDP_API extern __declspec(dllexport)
 #   else
-#       define MTDP_API __declspec(dllimport)
+#       define MTDP_API extern __declspec(dllimport)
 #   endif
 #else
 #   define MTDP_API extern

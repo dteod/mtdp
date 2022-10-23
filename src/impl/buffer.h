@@ -16,23 +16,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef MTDP_IMPL_BUFFER_H
 #define MTDP_IMPL_BUFFER_H
 
-#include <stdint.h>
-#include <stddef.h>
-#include <stdbool.h>
-
-#include "mtdp/buffer.h"
 #include "memory.h"
+#include "mtdp/buffer.h"
+
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #if MTDP_BUFFER_POOL_STATIC_SIZE
-    typedef struct {
-        mtdp_buffer buffers[MTDP_BUFFER_POOL_STATIC_SIZE];
-        size_t size;
-    } mtdp_buffer_pool;
+typedef struct {
+    mtdp_buffer buffers[MTDP_BUFFER_POOL_STATIC_SIZE];
+    size_t      size;
+} mtdp_buffer_pool;
 #else
-    typedef struct {
-        mtdp_buffer* buffers;
-        size_t size, capacity;
-    } mtdp_buffer_pool;
+typedef struct {
+    mtdp_buffer* buffers;
+    size_t       size, capacity;
+} mtdp_buffer_pool;
 #endif
 
 void        mtdp_buffer_pool_init(mtdp_buffer_pool*);
@@ -40,29 +40,28 @@ void        mtdp_buffer_pool_destroy(mtdp_buffer_pool*);
 bool        mtdp_buffer_pool_push_back(mtdp_buffer_pool* self, const mtdp_buffer e);
 mtdp_buffer mtdp_buffer_pool_pop_back(mtdp_buffer_pool* self);
 size_t      mtdp_buffer_pool_size(const mtdp_buffer_pool*);
-bool        mtdp_buffer_pool_resize(mtdp_buffer_pool *self, size_t size);
-
+bool        mtdp_buffer_pool_resize(mtdp_buffer_pool* self, size_t size);
 
 typedef mtdp_buffer mtdp_buffer_fifo_block[MTDP_BUFFER_FIFO_BLOCK_SIZE];
 
 #if MTDP_BUFFER_FIFO_BLOCKS
-    typedef mtdp_buffer_fifo_block mtdp_buffer_fifo_blocks[MTDP_BUFFER_FIFO_BLOCKS];
+typedef mtdp_buffer_fifo_block mtdp_buffer_fifo_blocks[MTDP_BUFFER_FIFO_BLOCKS];
 #else
-    /**
-     * @brief To disambiguate between the block type and the pointer to the first element of a buffer block. 
-     */
-    typedef mtdp_buffer* mtdp_buffer_aggregate;
-#   if MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE
-        typedef struct {
-            mtdp_buffer_aggregate blocks[MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE];
-            size_t size;
-        } mtdp_buffer_fifo_blocks;
-#   else
-        typedef struct {
-            mtdp_buffer_aggregate* blocks;
-            size_t size, capacity;
-        } mtdp_buffer_fifo_blocks;
-#   endif
+/**
+ * @brief To disambiguate between the block type and the pointer to the first element of a buffer block. 
+ */
+typedef mtdp_buffer* mtdp_buffer_aggregate;
+#  if MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE
+typedef struct {
+    mtdp_buffer_aggregate blocks[MTDP_BUFFER_FIFO_BLOCK_VECTOR_STATIC_SIZE];
+    size_t                size;
+} mtdp_buffer_fifo_blocks;
+#  else
+typedef struct {
+    mtdp_buffer_aggregate* blocks;
+    size_t                 size, capacity;
+} mtdp_buffer_fifo_blocks;
+#  endif
 #endif
 
 /**
@@ -105,14 +104,14 @@ typedef mtdp_buffer mtdp_buffer_fifo_block[MTDP_BUFFER_FIFO_BLOCK_SIZE];
  */
 typedef struct {
     mtdp_buffer_fifo_blocks blocks;
-    size_t size;
-    size_t first_element_offset;
+    size_t                  size;
+    size_t                  first_element_offset;
 } mtdp_buffer_fifo;
 
-bool    mtdp_buffer_fifo_init(mtdp_buffer_fifo* self);
-void    mtdp_buffer_fifo_destroy(mtdp_buffer_fifo* self);
-bool    mtdp_buffer_fifo_push_back(mtdp_buffer_fifo* self, const mtdp_buffer);
-bool    mtdp_buffer_fifo_pop_front(mtdp_buffer_fifo* self, mtdp_buffer*);
-size_t  mtdp_buffer_fifo_size(const mtdp_buffer_fifo* self);
+bool   mtdp_buffer_fifo_init(mtdp_buffer_fifo* self);
+void   mtdp_buffer_fifo_destroy(mtdp_buffer_fifo* self);
+bool   mtdp_buffer_fifo_push_back(mtdp_buffer_fifo* self, const mtdp_buffer);
+bool   mtdp_buffer_fifo_pop_front(mtdp_buffer_fifo* self, mtdp_buffer*);
+size_t mtdp_buffer_fifo_size(const mtdp_buffer_fifo* self);
 
 #endif

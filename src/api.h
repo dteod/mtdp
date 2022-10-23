@@ -13,30 +13,17 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef MTDP_WORKER_H
-#define MTDP_WORKER_H
+#ifndef MTDP_API_H
+#define MTDP_API_H
 
-#include "atomic.h"
-#include "thread.h"
-
-#include <stdbool.h>
-
-typedef struct {
-    thrd_t thread;
-    cnd_t  cv;
-    mtx_t  mutex;
-    bool   enabled, destroyed;
-
-    const char*  name;
-    thrd_start_t cb;
-    void*        args;
-} mtdp_worker;
-
-bool mtdp_worker_init(mtdp_worker* worker);
-bool mtdp_worker_create_thread(mtdp_worker* worker);
-bool mtdp_worker_enable(mtdp_worker* worker);
-bool mtdp_worker_disable(mtdp_worker* worker);
-bool mtdp_worker_destroy(mtdp_worker* worker);
-bool mtdp_worker_join(mtdp_worker* worker);
+#if defined(_MSC_VER) && MTDP_SHARED
+#  if defined(MTDP_INTERNAL)
+#    define MTDP_API_INTERNAL __declspec(dllexport)
+#  else
+#    define MTDP_API_INTERNAL __declspec(dllimport)
+#  endif
+#else
+#  define MTDP_API_INTERNAL
+#endif
 
 #endif
