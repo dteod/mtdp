@@ -34,7 +34,7 @@ extern "C" {
 
 static thread_local enum mtdp_error mtdp_errno_location = MTDP_OK;
 
-MTDP_API_INTERNAL enum mtdp_error*
+enum mtdp_error*
 mtdp_errno_ptr_mutable()
 {
     return &mtdp_errno_location;
