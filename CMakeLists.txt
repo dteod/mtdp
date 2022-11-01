@@ -208,6 +208,20 @@ else()
     install(TARGETS static shared
         EXPORT mtdpTargets
     )
+    install(FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp.h
+        DESTINATION include
+    )
+    install(FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/buffer.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/pipe.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/pipeline.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/sink.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/source.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/stage.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/errno.h
+        DESTINATION include/mtdp
+    )
 endif()
 
 install(FILES
