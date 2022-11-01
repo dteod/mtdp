@@ -151,7 +151,10 @@ function(add_mtdp_library LIBTYPE)
 endfunction()
 
 add_mtdp_library(STATIC)
-add_mtdp_library(SHARED)
+
+if(TARGET_SUPPORTS_SHARED_LIBS)
+    add_mtdp_library(SHARED)
+endif()
 
 find_package(Doxygen QUIET)
 
