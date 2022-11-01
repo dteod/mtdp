@@ -71,7 +71,7 @@ function(add_mtdp_library LIBTYPE)
     )
     add_library(mtdp::${LIBNAME} ALIAS ${LIBNAME})
 
-    if(WIN32)
+    if(MSVC)
         # As of 31/08/22 _Thread_local is not implemented in MSVC
         # compiling as C so we compile errno as C++ (with proper
         # name mangling set in the source code)
@@ -203,10 +203,17 @@ set(CPACK_GENERATOR "TZST")
 include(CPack)
 
 if(${CMAKE_VERSION} GREATER_EQUAL 3.23)
-    install(TARGETS static shared
-        EXPORT mtdpTargets
-        FILE_SET HEADERS
-    )
+    if(TARGET_SUPPORTS_SHARED_LIBS)
+        install(TARGETS static shared
+            EXPORT mtdpTargets
+            FILE_SET HEADERS
+        )
+    else()
+        install(TARGETS static
+            EXPORT mtdpTargets
+            FILE_SET HEADERS
+        )
+    endif()
 else()
     install(TARGETS static shared
         EXPORT mtdpTargets
