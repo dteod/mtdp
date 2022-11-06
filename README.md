@@ -1,4 +1,7 @@
 # mtdp
+
+![build-badge](https://github.com/dteod/mtdp/actions/workflows/cmake.yml/badge.svg)
+
 `mtdp` is a C library aimed at handling software multi-threaded [data pipelines](https://en.wikipedia.org/wiki/Pipeline_(computing)).
 
 ## Use case
