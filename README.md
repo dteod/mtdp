@@ -48,7 +48,7 @@ To build the library, you will need a C11 compatible compiler (actually C17 is c
 mkdir -p build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE:String=Release
-cmake --build . --target Release
+cmake --build . --config Release
 ```
 
 On *NIX you can find two examples showing the usage of the library compiled in the build directory as `mtdp_infinite_datastream_example` and `mtdp_finite_datastream_example`.
