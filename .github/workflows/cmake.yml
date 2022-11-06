@@ -27,12 +27,3 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
       
-    - name: Pack
-      #if: github.ref_type == 'tag'
-      run: cpack --config ${{github.workspace}}/build/CPackConfig.cmake -B ${{github.workspace}}
-      
-    - name: Cache
-      #if: github.ref_type == 'tag'
-      uses: actions/cache@v3.0.11
-      with:
-        path: ${{github.workspace}}/build/mtdp-*.tar.zst
