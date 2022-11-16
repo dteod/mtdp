@@ -23,7 +23,7 @@ The stages are distinguished in source stage producing data, internal stages tha
 
 ## Usage
 The library exposes an `mtdp_pipeline` class together with its own API. After retrieving an instance of it, configure it:
-1. provide references to the payload functions that will called repeatedly by the stages;
+1. provide references to the payload functions that will be called repeatedly by the stages;
 2. resize the pipes selecting the number of buffers they are going to use;
 3. provide the buffers to use in each pipe. These buffers may be of a different type or size on each pipe.
 
