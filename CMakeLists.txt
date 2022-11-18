@@ -152,6 +152,8 @@ endfunction()
 
 add_mtdp_library(STATIC)
 
+get_property(TARGET_SUPPORTS_SHARED_LIBS GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
+
 if(TARGET_SUPPORTS_SHARED_LIBS)
     add_mtdp_library(SHARED)
 endif()
