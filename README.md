@@ -1,4 +1,7 @@
 # mtdp
+
+![build-badge](https://github.com/dteod/mtdp/actions/workflows/cmake.yml/badge.svg)
+
 `mtdp` is a C library aimed at handling software multi-threaded [data pipelines](https://en.wikipedia.org/wiki/Pipeline_(computing)).
 
 ## Use case
@@ -20,7 +23,7 @@ The stages are distinguished in source stage producing data, internal stages tha
 
 ## Usage
 The library exposes an `mtdp_pipeline` class together with its own API. After retrieving an instance of it, configure it:
-1. provide references to the payload functions that will called repeatedly by the stages;
+1. provide references to the payload functions that will be called repeatedly by the stages;
 2. resize the pipes selecting the number of buffers they are going to use;
 3. provide the buffers to use in each pipe. These buffers may be of a different type or size on each pipe.
 
@@ -45,7 +48,7 @@ To build the library, you will need a C11 compatible compiler (actually C17 is c
 mkdir -p build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE:String=Release
-cmake --build . --target Release
+cmake --build . --config Release
 ```
 
 On *NIX you can find two examples showing the usage of the library compiled in the build directory as `mtdp_infinite_datastream_example` and `mtdp_finite_datastream_example`.
