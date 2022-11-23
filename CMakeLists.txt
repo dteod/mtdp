@@ -35,6 +35,8 @@ default_setting(MTDP_BUFFER_FIFO_BLOCK_SIZE 16)
 default_setting(MTDP_PIPELINE_CONSUMER_TIMEOUT_US 100000)
 default_setting(MTDP_STRICT_ISO_C false)
 
+get_property(TARGET_SUPPORTS_SHARED_LIBS GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
+
 function(add_mtdp_library LIBTYPE)
     string(TOLOWER ${LIBTYPE} LIBNAME)
     string(FIND "${CMAKE_C_COMPILER}" "mingw32" IS_MINGW32)
@@ -104,7 +106,7 @@ function(add_mtdp_library LIBTYPE)
     target_include_directories(${LIBNAME}
         PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/>
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
-        PUBLIC $<INSTALL_INTERFACE:include/>
+        PUBLIC $<INSTALL_INTERFACE:${PROJECT_NAME}/include>
     )
     target_compile_definitions(${LIBNAME}
         PUBLIC $<BUILD_INTERFACE:MTDP_INTERNAL=1>
@@ -133,7 +135,7 @@ function(add_mtdp_library LIBTYPE)
     endif()
 
     target_hard_compilation(${LIBNAME} PRIVATE)
-    set_target_properties(${LIBNAME} PROPERTIES ARCHIVE_OUTPUT_NAME mtdp LIBRARY_OUTPUT_NAME mtdp)
+    set_target_properties(${LIBNAME} PROPERTIES OUTPUT_NAME mtdp)
 
     if(${SHARED_VALUE})
         set_target_properties(${LIBNAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -145,7 +147,7 @@ function(add_mtdp_library LIBTYPE)
         endif()
     else()
         if(WIN32 OR NOT(${IS_MINGW32} EQUAL "-1"))
-            set_target_properties(${LIBNAME} PROPERTIES SUFFIX ".lib")
+            set_target_properties(${LIBNAME} PROPERTIES SUFFIX "-static.lib")
         endif()
     endif()
 endfunction()
@@ -207,20 +209,40 @@ if(${CMAKE_VERSION} GREATER_EQUAL 3.23)
         install(TARGETS static shared
             EXPORT mtdpTargets
             FILE_SET HEADERS
+            DESTINATION ${PROJECT_NAME}/include
+            RUNTIME DESTINATION ${PROJECT_NAME}/bin
+            LIBRARY DESTINATION ${PROJECT_NAME}/lib
+            ARCHIVE DESTINATION ${PROJECT_NAME}/lib
         )
     else()
         install(TARGETS static
             EXPORT mtdpTargets
             FILE_SET HEADERS
+            DESTINATION ${PROJECT_NAME}/include
+            RUNTIME DESTINATION ${PROJECT_NAME}/bin
+            LIBRARY DESTINATION ${PROJECT_NAME}/lib
+            ARCHIVE DESTINATION ${PROJECT_NAME}/lib
         )
     endif()
 else()
-    install(TARGETS static shared
-        EXPORT mtdpTargets
-    )
+    if(TARGET_SUPPORTS_SHARED_LIBS)
+        install(TARGETS static shared
+            EXPORT mtdpTargets
+            RUNTIME DESTINATION ${PROJECT_NAME}/bin
+            LIBRARY DESTINATION ${PROJECT_NAME}/lib
+            ARCHIVE DESTINATION ${PROJECT_NAME}/lib
+        )
+    else()
+        install(TARGETS static
+            EXPORT mtdpTargets
+            RUNTIME DESTINATION ${PROJECT_NAME}/bin
+            LIBRARY DESTINATION ${PROJECT_NAME}/lib
+            ARCHIVE DESTINATION ${PROJECT_NAME}/lib
+        )
+    endif()
     install(FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp.h
-        DESTINATION include
+        DESTINATION ${PROJECT_NAME}/include
     )
     install(FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/buffer.h
@@ -230,23 +252,23 @@ else()
         ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/source.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/stage.h
         ${CMAKE_CURRENT_SOURCE_DIR}/include/mtdp/errno.h
-        DESTINATION include/mtdp
+        DESTINATION ${PROJECT_NAME}/include/mtdp
     )
 endif()
 
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/mtdpConfig.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/mtdpConfigVersion.cmake
-    DESTINATION share/cmake/mtdp
+    DESTINATION ${PROJECT_NAME}/share/cmake/mtdp
 )
 install(EXPORT mtdpTargets
-    DESTINATION share/cmake/mtdp
+    DESTINATION ${PROJECT_NAME}/share/cmake/mtdp
     NAMESPACE mtdp::
 )
 install(FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
     ${CMAKE_CURRENT_SOURCE_DIR}/COPYING.LESSER
-    DESTINATION share
+    DESTINATION ${PROJECT_NAME}/share
 )
 
 include(CMakePackageConfigHelpers)
