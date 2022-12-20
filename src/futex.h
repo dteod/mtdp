@@ -32,7 +32,7 @@ along with this program.  If not, see
  *                  - Raymond Chen
  */
 
-#ifdef __unix__
+#ifdef __linux__
 #  include <limits.h>
 #  include <unistd.h>
 
