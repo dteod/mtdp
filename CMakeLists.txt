@@ -15,11 +15,16 @@
 
 cmake_minimum_required(VERSION 3.0)
 
+set(PROJECT_NAME MTDP)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/TargetHardCompilation.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DefaultSetting.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Version.cmake)
 
-project(mtdp VERSION 0.1.0)
+project(mtdp VERSION ${MTDP_VERSION_MAJOR}.${MTDP_VERSION_MINOR}.${MTDP_VERSION_PATCH})
 
+message(STATUS "Project: ${PROJECT_NAME}")
+message(STATUS "Version: ${MTDP_VERSION_MAJOR}.${MTDP_VERSION_MINOR}.${MTDP_VERSION_PATCH}")
+message(STATUS "C Compiler: ${CMAKE_C_COMPILER}")
 default_setting(MTDP_STATIC_THREADSAFE true)
 default_setting(MTDP_STATIC_THREADSAFE_LOCKFREE true)
 default_setting(MTDP_PIPELINE_STATIC_INSTANCES 0)

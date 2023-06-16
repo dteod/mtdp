@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <stddef.h>
 #include <stdint.h>
 
-struct s_mtdp_pipe {
+struct mtdp_pipe {
     mtx_t pool_mutex;
     mtx_t fifo_mutex;
 

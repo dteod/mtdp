@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <stddef.h>
 #include <stdint.h>
 
-struct s_mtdp_pipeline {
+struct mtdp_pipeline {
     mtdp_source_impl       source_impl;
     mtdp_stage_impl_vector stage_impls;
     mtdp_sink_impl         sink_impl;

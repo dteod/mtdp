@@ -79,7 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
  * The only allowed thread-safe mechanism is to wait on a pipeline
  * to finish execution without active state changes.
  */
-typedef struct s_mtdp_pipeline mtdp_pipeline;
+typedef struct mtdp_pipeline mtdp_pipeline;
 
 /**
  * @brief Struct used as pipeline creation parameters,
@@ -117,6 +117,7 @@ typedef struct {
  * in future releases.
  */
 typedef union {
+    void*                user;
     mtdp_pipeline_params params;
     uint8_t              padding[1024];
 } mtdp_pipeline_parameters;
@@ -135,7 +136,8 @@ typedef union {
  * a static global storage pool, or from the heap.
  * 
  * Future implementations reserve the possibility to customize the pipeline
- * behavior using runtime parameters provided with @p params .
+ * behavior using runtime parameters provided with @p params . @p user field
+ * left for user's implementations.
  * 
  * @param params pointer to a pipeline_parameters creation structure
  * @return mtdp_pipeline* a pipeline to be configured, NULL on error

@@ -80,7 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
  * }
  * @endcode
  */
-typedef struct s_mtdp_pipe mtdp_pipe;
+typedef struct mtdp_pipe mtdp_pipe;
 
 /**
  * @brief Returns the next pipe entry from a previous entry.
