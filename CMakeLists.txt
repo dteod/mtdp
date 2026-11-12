@@ -20,6 +20,8 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/TargetHardCompilation.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DefaultSetting.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Version.cmake)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+
 project(mtdp VERSION ${MTDP_VERSION_MAJOR}.${MTDP_VERSION_MINOR}.${MTDP_VERSION_PATCH})
 
 message(STATUS "Project: ${PROJECT_NAME}")
@@ -39,6 +41,23 @@ default_setting(MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO 0.5)
 default_setting(MTDP_BUFFER_FIFO_BLOCK_SIZE 16)
 default_setting(MTDP_PIPELINE_CONSUMER_TIMEOUT_US 100000)
 default_setting(MTDP_STRICT_ISO_C false)
+default_setting(MTDP_ENABLE_TSAN false)
+
+if(MTDP_ENABLE_TSAN)
+    if(NOT(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang"))
+        message(FATAL_ERROR "MTDP_ENABLE_TSAN requires gcc or clang (found ${CMAKE_C_COMPILER_ID})")
+    endif()
+
+    # Set globally so that the libraries, the examples and the tests are all
+    # instrumented, without leaking the flags into the exported targets.
+    # ThreadSanitizer does not intercept C11 <threads.h>, so a shim redirecting
+    # it to pthreads is force included everywhere (see src/tsan_threads.h).
+    set(MTDP_TSAN_FLAGS "-fsanitize=thread -g -fno-omit-frame-pointer -include \"${CMAKE_CURRENT_SOURCE_DIR}/src/tsan_threads.h\"")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MTDP_TSAN_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTDP_TSAN_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=thread")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=thread")
+endif()
 
 get_property(TARGET_SUPPORTS_SHARED_LIBS GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
 

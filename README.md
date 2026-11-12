@@ -87,5 +87,16 @@ Also these parameters may be configured miscellaneously.
 |`MTDP_BUFFER_FIFO_SHIFT_FILLING_RATIO`|0.5| Ratio under which a buffer shift is performed when at the edge of a FIFO block; above this value more memory is requested from the FIFO.|
 |`MTDP_STRICT_ISO_C`|false| Only useful when compiling with gcc or clang, uses an inline function instead of an expression statement.|
 
+### ThreadSanitizer
+On Linux with gcc (glibc required) the library, the examples and the tests can be instrumented with [ThreadSanitizer](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual) by configuring with `-DMTDP_ENABLE_TSAN=true`:
+
+```
+cmake -B build-tsan -DCMAKE_BUILD_TYPE=RelWithDebInfo -DMTDP_ENABLE_TSAN=true
+cmake --build build-tsan
+./build-tsan/mtdp_finite_datastream_example
+```
+
+ThreadSanitizer does not intercept the C11 `<threads.h>` API used by the library, so in this configuration `src/tsan_threads.h` is force included in every translation unit to redirect it to pthreads. Use a dedicated build directory and do not install or package a build configured this way.
+
 ## Known bugs
 None at the moment, but if any are found please feel free to open an issue.

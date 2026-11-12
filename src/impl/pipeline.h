@@ -38,7 +38,7 @@ struct mtdp_pipeline {
     mtdp_pipe_vector  pipes;
 
     size_t          n_stages;
-    bool            enabled, active;
+    _Atomic(bool)   enabled, active;
     atomic_uint32_t destroying;
 };
 

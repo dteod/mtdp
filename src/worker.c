@@ -83,7 +83,7 @@ mtdp_worker_routine(void* data)
 #endif
     }
 
-    while(!worker->destroyed) {
+    while(!atomic_load(&worker->destroyed)) {
         mtx_check(mtx_lock(&worker->mutex));
         while(!(worker->enabled || worker->destroyed)) {
             cnd_check(cnd_wait(&worker->cv, &worker->mutex));
@@ -128,7 +128,8 @@ bool
 mtdp_worker_enable(mtdp_worker* worker)
 {
     mtx_check(mtx_lock(&worker->mutex));
-    worker->enabled = true;
+    worker->enabled   = true;
+    worker->destroyed = false;
     /* This is terribly wrong: a deadlock is occurring here.
         The best we can do right now is to notify the user
         with an error code but a better error handling strategy
